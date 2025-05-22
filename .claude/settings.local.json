@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(pnpm init:*)",
+      "Bash(pnpm create:*)",
+      "Bash(pnpm add:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm install:*)",
+      "Bash(touch:*)",
+      "Bash(find:*)",
+      "Bash(npm run build:*)",
+      "Bash(chmod:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm install:*)",
+      "Bash(node:*)",
+      "Bash(npm run:*)",
+      "Bash(docker run:*)"
+    ],
+    "deny": []
+  }
+}

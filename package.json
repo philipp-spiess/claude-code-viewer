@@ -1,0 +1,31 @@
+{
+  "name": "@claude-viewer/root",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.2",
+  "scripts": {
+    "dev": "pnpm --parallel run dev",
+    "build": "pnpm run build:shared && pnpm --parallel run build",
+    "build:shared": "pnpm --filter @claude-viewer/shared build",
+    "test": "pnpm run test:unit",
+    "test:unit": "vitest",
+    "test:e2e": "pnpm --filter @claude-viewer/viewer run test:e2e",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "check": "biome check --formatter-enabled=false .",
+    "typecheck": "pnpm --parallel run typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

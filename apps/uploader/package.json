@@ -1,0 +1,29 @@
+{
+  "name": "@claude-viewer/uploader",
+  "version": "1.0.0",
+  "description": "CLI tool for uploading Claude transcripts",
+  "type": "module",
+  "bin": {
+    "claude-viewer": "./bin/claude-upload.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "claude-viewer": "node dist/index.js"
+  },
+  "dependencies": {
+    "@claude-viewer/shared": "workspace:*",
+    "axios": "^1.6.2",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.10.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2"
+  }
+}

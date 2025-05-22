@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    // Type Checking
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    // Module Resolution
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    
+    // Emit
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    
+    // JavaScript Support
+    "allowJs": true,
+    "checkJs": false,
+    
+    // Interop Constraints
+    "verbatimModuleSyntax": true,
+    
+    // Projects
+    "composite": true,
+    "incremental": true,
+    
+    // Path Mapping
+    "baseUrl": ".",
+    "paths": {
+      "@claude-viewer/shared": ["./packages/shared/src"],
+      "@claude-viewer/shared/*": ["./packages/shared/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", "coverage"]
+}

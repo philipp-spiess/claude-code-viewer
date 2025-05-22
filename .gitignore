@@ -1,0 +1,86 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.turbo/
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+.ntvs*
+.njsproj
+.sln
+.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+.temp/
+.tmp/
+*.tmp
+*.temp
+
+# TypeScript
+*.tsbuildinfo
+.tsc-output/
+
+# Vitest
+.vitest-preview/
+
+# Vite
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+
+# Extension specific
+*.crx
+*.pem
+*.xpi
+*.zip
+
+# Chrome Extension build artifacts
+packages/uploader/build/
+packages/uploader/dist/
+
+# Viewer build artifacts
+packages/viewer/dist/
+
+# Misc
+.cache/
+.parcel-cache/
+.vite/
