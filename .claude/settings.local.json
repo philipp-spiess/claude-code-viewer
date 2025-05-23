@@ -20,7 +20,8 @@
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_wait_for",
       "Bash(npx:*)",
-      "mcp__playwright__browser_install"
+      "mcp__playwright__browser_install",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }
