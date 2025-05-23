@@ -53,7 +53,7 @@ export default async function TranscriptViewer({
       {/* Header */}
       <div className="w-full max-w-[120ch] mx-auto px-4 py-3">
         <div className="text-text">
-          <div>Claude Code Viewer</div>
+          <div>✻⇡ Claude Code Viewer</div>
           {summary && (
             <div className="text-subtext-1 mt-1">
               {summary}
