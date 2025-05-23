@@ -1,0 +1,28 @@
+{
+  "name": "storage",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy:production": "wrangler deploy",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "r2",
+    "storage"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Cloudflare Worker for storing Claude Code transcripts in R2",
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20250523.0",
+    "wrangler": "^4.16.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "vitest": "^3.1.4"
+  }
+}

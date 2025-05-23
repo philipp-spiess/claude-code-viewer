@@ -1,0 +1,7 @@
+name = "claude-code-storage"
+main = "src/index.ts"
+compatibility_date = "2025-05-23"
+
+[[r2_buckets]]
+binding = "TRANSCRIPTS_BUCKET"
+bucket_name = "claude-code-transcripts"
