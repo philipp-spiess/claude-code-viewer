@@ -34,9 +34,10 @@ async function getTranscript(id: string): Promise<Transcript> {
 export default async function TranscriptViewer({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const transcript = await getTranscript(params.id);
+  const { id } = await params;
+  const transcript = await getTranscript(id);
 
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
