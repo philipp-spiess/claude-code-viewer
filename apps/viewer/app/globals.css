@@ -1,9 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @import "tailwindcss";
+
+@theme inline {
+  --font-mono: var(--font-ibm-plex-mono), monospace;
+}
 
 @theme static {
   --color-\*: initial;
-  --font-mono: "JetBrains Mono", monospace;
 
   /* https://catppuccin.com/palette/ frappe */
   --color-rosewater: hsl(10deg, 57%, 88%);

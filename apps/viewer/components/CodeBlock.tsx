@@ -20,30 +20,30 @@ export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockPro
     }
   };
   
-  // Simple syntax highlighting for common tokens
+  // Simple syntax highlighting for common tokens using Catppuccin colors
   const highlightCode = (code: string, lang: string) => {
     if (lang === 'json') {
       return code
-        .replace(/("[^"]*":)/g, '<span class="text-blue-600 dark:text-blue-400">$1</span>')
-        .replace(/("[^"]*")/g, '<span class="text-green-600 dark:text-green-400">$1</span>')
-        .replace(/(\b\d+\b)/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
-        .replace(/\b(true|false|null)\b/g, '<span class="text-orange-600 dark:text-orange-400">$1</span>');
+        .replace(/("[^"]*":)/g, '<span style="color: var(--color-blue)">$1</span>')
+        .replace(/("[^"]*")/g, '<span style="color: var(--color-green)">$1</span>')
+        .replace(/(\b\d+\b)/g, '<span style="color: var(--color-mauve)">$1</span>')
+        .replace(/\b(true|false|null)\b/g, '<span style="color: var(--color-peach)">$1</span>');
     }
     
     if (lang === 'javascript' || lang === 'typescript' || lang === 'jsx' || lang === 'tsx') {
       return code
         .replace(/\b(const|let|var|function|return|if|else|for|while|class|import|export|from|async|await)\b/g, 
-          '<span class="text-purple-600 dark:text-purple-400">$1</span>')
-        .replace(/(\'[^\']*\'|"[^"]*"|`[^`]*`)/g, '<span class="text-green-600 dark:text-green-400">$1</span>')
-        .replace(/(\/\/.*$)/gm, '<span class="text-gray-500 dark:text-gray-400">$1</span>');
+          '<span style="color: var(--color-mauve)">$1</span>')
+        .replace(/(\'[^\']*\'|"[^"]*"|`[^`]*`)/g, '<span style="color: var(--color-green)">$1</span>')
+        .replace(/(\/\/.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>');
     }
     
     if (lang === 'python') {
       return code
         .replace(/\b(def|class|import|from|return|if|else|elif|for|while|in|True|False|None|async|await)\b/g, 
-          '<span class="text-purple-600 dark:text-purple-400">$1</span>')
-        .replace(/(\'[^\']*\'|"[^"]*")/g, '<span class="text-green-600 dark:text-green-400">$1</span>')
-        .replace(/(#.*$)/gm, '<span class="text-gray-500 dark:text-gray-400">$1</span>');
+          '<span style="color: var(--color-mauve)">$1</span>')
+        .replace(/(\'[^\']*\'|"[^"]*")/g, '<span style="color: var(--color-green)">$1</span>')
+        .replace(/(#.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>');
     }
     
     return code;
@@ -54,18 +54,18 @@ export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockPro
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={copyToClipboard}
-          className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded-sm transition-colors"
+          className="px-2 py-1 text-xs bg-surface-1 hover:bg-surface-2 text-text rounded transition-colors"
         >
           {copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
       
-      <div className="bg-gray-900 dark:bg-gray-950 rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-gray-900 border-b border-gray-700">
-          <span className="text-xs text-gray-400">{language}</span>
+      <div className="bg-surface-0 rounded overflow-hidden">
+        <div className="flex items-center justify-between px-3 py-2 bg-surface-1">
+          <span className="text-xs text-subtext-1">{language}</span>
         </div>
-        <div className="p-4 overflow-x-auto">
-          <pre className="text-sm text-gray-100">
+        <div className="p-3 overflow-x-auto">
+          <pre className="text-text">
             <code 
               dangerouslySetInnerHTML={{ 
                 __html: highlightCode(code, language) 

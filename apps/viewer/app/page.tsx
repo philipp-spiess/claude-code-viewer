@@ -111,12 +111,12 @@ export default function Home() {
             
             <label
               htmlFor="file-upload"
-              className="mt-4 cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-4 cursor-pointer inline-flex items-center px-4 py-2 border border-transparent font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? 'Uploading...' : 'Choose file'}
             </label>
             
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
               or drag and drop your transcript-*.jsonl file here
             </p>
           </div>
@@ -125,12 +125,12 @@ export default function Home() {
         {/* Error message */}
         {error && (
           <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
         {/* Instructions */}
-        <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+        <div className="mt-8 text-center text-gray-600 dark:text-gray-400">
           <p>To get your transcript:</p>
           <ol className="mt-2 space-y-1">
             <li>1. Use Claude with the <code className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-sm">--save-dir</code> flag</li>

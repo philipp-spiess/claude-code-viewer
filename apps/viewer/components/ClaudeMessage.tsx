@@ -189,7 +189,7 @@ function ToolUseDisplay({ toolUse }: { toolUse: any }) {
         onClick={() => shouldCollapse && setExpanded(!expanded)}
       >
         <span className="text-purple-600 dark:text-purple-400">⏺</span>
-        <span className="font-mono text-sm">{getToolDisplay()}</span>
+        <span className="font-mono">{getToolDisplay()}</span>
       </div>
       
       {(expanded || !shouldCollapse) && (

@@ -74,7 +74,7 @@ export default function MessageThread({ message, isNested = false }: MessageProp
       
       {/* Message Content */}
       <details open className="mb-4">
-        <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+        <summary className="cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
           {message.type} message
           {message.message?.role && ` (${message.message.role})`}
         </summary>

@@ -61,25 +61,25 @@ export default function ToolUse({ toolUse }: ToolUseProps) {
   const hasError = toolUse.error || (toolUse.result && typeof toolUse.result === 'object' && toolUse.result.error);
   
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+    <div className="bg-surface-0/30 rounded overflow-hidden">
       {/* Tool header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between text-left"
+        className="w-full px-3 py-2 bg-surface-0 hover:bg-surface-1 transition-colors flex items-center justify-between text-left"
       >
         <div className="flex items-center gap-2">
-          <div className={`${hasError ? 'text-red-500' : 'text-gray-600 dark:text-gray-400'}`}>
+          <div className={`${hasError ? 'text-red' : 'text-subtext-1'}`}>
             {getToolIcon(toolName)}
           </div>
-          <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
+          <span className="text-text">
             {toolName}
           </span>
           {hasError && (
-            <span className="text-xs text-red-600 dark:text-red-400">Error</span>
+            <span className="text-red">Error</span>
           )}
         </div>
         <svg
-          className={`w-4 h-4 text-gray-500 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-subtext-1 transition-transform ${expanded ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -90,14 +90,14 @@ export default function ToolUse({ toolUse }: ToolUseProps) {
       
       {/* Tool content */}
       {expanded && (
-        <div className="p-4 space-y-3">
+        <div className="p-3 space-y-3">
           {/* Parameters or Input */}
           {(toolUse.parameters || toolUse.input) && (
             <div>
-              <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              <h4 className="text-subtext-0 uppercase tracking-wider mb-2 text-xs">
                 {toolUse.input ? 'Input' : 'Parameters'}
               </h4>
-              <pre className="bg-gray-100 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto text-sm">
+              <pre className="bg-base p-3 rounded overflow-x-auto text-text">
                 {JSON.stringify(toolUse.parameters || toolUse.input, null, 2)}
               </pre>
             </div>
@@ -106,11 +106,11 @@ export default function ToolUse({ toolUse }: ToolUseProps) {
           {/* Result/Output */}
           {(toolUse.result || toolUse.output) && (
             <div>
-              <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              <h4 className="text-subtext-0 uppercase tracking-wider mb-2 text-xs">
                 {hasError ? 'Error' : 'Result'}
               </h4>
-              <div className={`${hasError ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : 'bg-gray-50 dark:bg-gray-900'} rounded-lg p-3 overflow-x-auto`}>
-                <pre className={`text-sm ${hasError ? 'text-red-700 dark:text-red-300' : 'text-gray-700 dark:text-gray-300'}`}>
+              <div className="bg-base rounded p-3 overflow-x-auto">
+                <pre className={`${hasError ? 'text-red' : 'text-text'}`}>
                   {typeof (toolUse.result || toolUse.output) === 'string' 
                     ? (toolUse.result || toolUse.output)
                     : JSON.stringify(toolUse.result || toolUse.output, null, 2)

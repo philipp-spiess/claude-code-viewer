@@ -33,7 +33,7 @@ export default function ClaudeTranscript({ messages }: TranscriptProps) {
   }
   
   return (
-    <div className="font-mono text-sm">
+    <div className="font-mono">
       {conversationGroups.map((group, idx) => (
         <div key={idx} className="mb-4">
           <ClaudeMessage message={group.root} />
