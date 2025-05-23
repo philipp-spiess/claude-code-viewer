@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/db';
-import { transcripts } from '@/src/db/schema';
+import { db } from '../../../src/db';
+import { transcripts } from '../../../src/db/schema';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {

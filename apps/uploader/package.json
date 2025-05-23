@@ -1,7 +1,7 @@
 {
-  "name": "@claude-viewer/uploader",
-  "version": "1.0.0",
-  "description": "CLI tool for uploading Claude transcripts",
+  "name": "claude-code-uploader",
+  "version": "0.1.0",
+  "description": "CLI tool for uploading Claude Code transcripts",
   "type": "module",
   "bin": {
     "claude-viewer": "./bin/claude-upload.js"

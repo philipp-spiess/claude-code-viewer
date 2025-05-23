@@ -12,10 +12,14 @@ export default function MessageView({ message }: MessageProps) {
   // Handle different message types
   switch (message.type) {
     case 'human_turn':
-      return <UserMessage message={message} />;
+    case 'user':
+      // Handle the nested message structure for user messages
+      return <UserMessage message={message.message || message} />;
     
     case 'ai_turn':
-      return <AssistantMessage message={message} />;
+    case 'assistant':
+      // Handle the nested message structure for assistant messages
+      return <AssistantMessage message={message.message || message} />;
     
     case 'tool_use':
       return <ToolUse toolUse={message} />;
@@ -27,6 +31,20 @@ export default function MessageView({ message }: MessageProps) {
           <pre className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
             {message.output || message.result || JSON.stringify(message, null, 2)}
           </pre>
+        </div>
+      );
+    
+    case 'summary':
+      return (
+        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+          <div className="text-sm font-medium text-purple-800 dark:text-purple-200">
+            Summary: {message.summary}
+          </div>
+          {message.leafUuid && (
+            <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+              ID: {message.leafUuid}
+            </div>
+          )}
         </div>
       );
     
@@ -42,23 +60,21 @@ export default function MessageView({ message }: MessageProps) {
         </div>
       );
     
-    case 'summary':
-      return null; // Summary is shown in the header
-    
     default:
-      // For any unknown message type, show a debug view
-      if (process.env.NODE_ENV === 'development') {
-        return (
-          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-            <div className="text-xs text-yellow-600 dark:text-yellow-400 mb-1">
-              Unknown message type: {message.type}
-            </div>
-            <pre className="text-xs overflow-x-auto">
-              {JSON.stringify(message, null, 2)}
-            </pre>
+      // Show minimal info for other message types
+      return (
+        <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+          <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+            Type: {message.type}
           </div>
-        );
-      }
-      return null;
+          {message.toolUseResult && (
+            <div className="text-sm text-gray-700 dark:text-gray-300">
+              Tool Result: {typeof message.toolUseResult === 'string' 
+                ? message.toolUseResult 
+                : JSON.stringify(message.toolUseResult, null, 2)}
+            </div>
+          )}
+        </div>
+      );
   }
 }

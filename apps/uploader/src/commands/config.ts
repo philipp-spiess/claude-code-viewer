@@ -8,11 +8,11 @@ export function createConfigCommand(): Command {
     .description('Configure the Claude uploader')
     .action(async () => {
       const currentConfig = loadConfig();
-      
+
       console.log(chalk.blue('\nCurrent Configuration:'));
       console.log(`Server URL: ${chalk.yellow(currentConfig.serverUrl)}`);
       console.log('');
-      
+
       const { action } = await inquirer.prompt([
         {
           type: 'list',
@@ -24,7 +24,7 @@ export function createConfigCommand(): Command {
           ]
         }
       ]);
-      
+
       if (action === 'server') {
         const { serverUrl } = await inquirer.prompt([
           {
@@ -42,11 +42,11 @@ export function createConfigCommand(): Command {
             }
           }
         ]);
-        
+
         saveConfig({ serverUrl });
         console.log(chalk.green(`\n✓ Server URL updated to: ${serverUrl}`));
       }
     });
-  
+
   return command;
 }

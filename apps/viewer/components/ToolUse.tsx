@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import CodeBlock from './CodeBlock';
 
 interface ToolUseProps {
   toolUse: {
     tool_name?: string;
     name?: string;
     parameters?: any;
+    input?: any;
     result?: any;
     output?: any;
     error?: any;
+    id?: string;
   };
 }
 
@@ -90,16 +91,15 @@ export default function ToolUse({ toolUse }: ToolUseProps) {
       {/* Tool content */}
       {expanded && (
         <div className="p-4 space-y-3">
-          {/* Parameters */}
-          {toolUse.parameters && (
+          {/* Parameters or Input */}
+          {(toolUse.parameters || toolUse.input) && (
             <div>
               <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Parameters
+                {toolUse.input ? 'Input' : 'Parameters'}
               </h4>
-              <CodeBlock 
-                code={JSON.stringify(toolUse.parameters, null, 2)} 
-                language="json" 
-              />
+              <pre className="bg-gray-100 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto text-sm">
+                {JSON.stringify(toolUse.parameters || toolUse.input, null, 2)}
+              </pre>
             </div>
           )}
           

@@ -6,18 +6,17 @@ import { createConfigCommand } from './commands/config.js';
 
 // ASCII art banner
 const banner = chalk.blue(`
- ╭─────────────────────────╮
- │  Claude Transcript      │
- │       Uploader          │
- ╰─────────────────────────╯
+ ╭──────────────────────────────╮
+ │     Claude Code Uploader     │
+ ╰──────────────────────────────╯
 `);
 
 console.log(banner);
 
 program
   .name('claude-upload')
-  .description('CLI tool for uploading Claude transcripts to the viewer')
-  .version('1.0.0');
+  .description('CLI tool for uploading Claude Code transcripts to the viewer')
+  .version('0.1.0');
 
 // Add commands
 program.addCommand(createUploadCommand());

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/db';
-import { transcripts } from '@/src/db/schema';
+import { db } from '../../../../src/db';
+import { transcripts } from '../../../../src/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Fetch transcript from database
     const [transcript] = await db
@@ -43,7 +43,7 @@ export async function GET(
       projectPath: transcript.projectPath,
       summary: transcript.summary,
       uploadedAt: transcript.uploadedAt,
-      messageCount: transcript.messageCount,
+      messageCount: messages.length,
     });
     
   } catch (error) {

@@ -6,7 +6,7 @@ import ToolUse from './ToolUse';
 
 interface AssistantMessageProps {
   message: {
-    content?: string;
+    content?: string | Array<{type: string; text?: string; [key: string]: any}>;
     timestamp?: string;
     tool_uses?: any[];
   };
@@ -14,6 +14,26 @@ interface AssistantMessageProps {
 
 export default function AssistantMessage({ message }: AssistantMessageProps) {
   const [expanded, setExpanded] = useState(true);
+  
+  // Function to extract text and tool uses from content
+  const extractContent = () => {
+    const textParts = [];
+    const toolUses = [];
+    
+    if (typeof message.content === 'string') {
+      textParts.push(message.content);
+    } else if (Array.isArray(message.content)) {
+      message.content.forEach((item) => {
+        if (item.type === 'text' && item.text) {
+          textParts.push(item.text);
+        } else if (item.type === 'tool_use') {
+          toolUses.push(item);
+        }
+      });
+    }
+    
+    return { text: textParts.join(''), toolUses };
+  };
   
   // Function to parse content and identify code blocks
   const renderContent = (content: string) => {
@@ -59,20 +79,30 @@ export default function AssistantMessage({ message }: AssistantMessageProps) {
           )}
         </div>
         
-        {message.content && (
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            {renderContent(message.content)}
-          </div>
-        )}
-        
-        {/* Tool uses */}
-        {message.tool_uses && message.tool_uses.length > 0 && (
-          <div className="mt-4 space-y-3">
-            {message.tool_uses.map((toolUse, idx) => (
-              <ToolUse key={idx} toolUse={toolUse} />
-            ))}
-          </div>
-        )}
+        {(() => {
+          const { text, toolUses } = extractContent();
+          return (
+            <>
+              {text && (
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  {renderContent(text)}
+                </div>
+              )}
+              
+              {/* Tool uses from content or from tool_uses property */}
+              {(toolUses.length > 0 || (message.tool_uses && message.tool_uses.length > 0)) && (
+                <div className="mt-4 space-y-3">
+                  {toolUses.map((toolUse, idx) => (
+                    <ToolUse key={`content-${idx}`} toolUse={toolUse} />
+                  ))}
+                  {message.tool_uses && message.tool_uses.map((toolUse, idx) => (
+                    <ToolUse key={`prop-${idx}`} toolUse={toolUse} />
+                  ))}
+                </div>
+              )}
+            </>
+          );
+        })()}
       </div>
     </div>
   );
