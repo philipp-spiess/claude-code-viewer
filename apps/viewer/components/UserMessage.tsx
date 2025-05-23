@@ -11,7 +11,7 @@ interface UserMessageProps {
 }
 
 export default function UserMessage({ message }: UserMessageProps) {
-  const [expanded, setExpanded] = useState(true);
+  const [_expanded, _setExpanded] = useState(true);
   
   if (!message.content) return null;
   
@@ -22,7 +22,7 @@ export default function UserMessage({ message }: UserMessageProps) {
     }
     
     if (Array.isArray(message.content)) {
-      const text = message.content.map((item, idx) => {
+      const text = message.content.map((item) => {
         if (item.type === 'text' && item.text) {
           return item.text;
         }
@@ -38,8 +38,8 @@ export default function UserMessage({ message }: UserMessageProps) {
   // Format content to handle command messages
   const formatContent = (text: string) => {
     // Parse command messages
-    const commandMatch = text.match(/<command-message>(.*?)<\/command-message>/s);
-    const commandNameMatch = text.match(/<command-name>(.*?)<\/command-name>/s);
+    const commandMatch = text.match(/<command-message>([\s\S]*?)<\/command-message>/);
+    const commandNameMatch = text.match(/<command-name>([\s\S]*?)<\/command-name>/);
     
     if (commandMatch && commandNameMatch) {
       const commandMessage = commandMatch[1];

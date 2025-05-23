@@ -13,12 +13,12 @@ interface AssistantMessageProps {
 }
 
 export default function AssistantMessage({ message }: AssistantMessageProps) {
-  const [expanded, setExpanded] = useState(true);
+  const [_expanded, _setExpanded] = useState(true);
   
   // Function to extract text and tool uses from content
   const extractContent = () => {
-    const textParts = [];
-    const toolUses = [];
+    const textParts: string[] = [];
+    const toolUses: any[] = [];
     
     if (typeof message.content === 'string') {
       textParts.push(message.content);
@@ -44,7 +44,7 @@ export default function AssistantMessage({ message }: AssistantMessageProps) {
         const match = part.match(/```(\w+)?\n([\s\S]*?)```/);
         if (match) {
           const [, language, code] = match;
-          return <CodeBlock key={index} code={code.trim()} language={language || 'plaintext'} />;
+          return <CodeBlock key={index} code={code?.trim() || ''} language={language || 'plaintext'} />;
         }
       }
       

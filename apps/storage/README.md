@@ -2,6 +2,8 @@
 
 A Cloudflare Worker service for storing and retrieving Claude Code transcript files using R2 object storage.
 
+**Production URL**: `https://claude-code-storage.remote.workers.dev`
+
 ## Features
 
 - **GET /<id>**: Retrieve a transcript by UUID

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../src/db';
-import { transcripts } from '../../../src/db/schema';
 import { v4 as uuidv4 } from 'uuid';
+
+const STORAGE_WORKER_URL = 'https://claude-code-storage.remote.workers.dev';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,15 +45,22 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Insert into database
-    await db.insert(transcripts).values({
-      id,
-      content,
-      projectPath: projectPath || null,
-      summary: summary || null,
-      fileSize: file.size,
-      messageCount: messageCount || null,
+    // Send to storage worker
+    const response = await fetch(`${STORAGE_WORKER_URL}/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        transcript: content,
+        directory: projectPath || undefined,
+        repo: summary || undefined,
+      }),
     });
+
+    if (!response.ok) {
+      throw new Error(`Storage worker responded with status ${response.status}`);
+    }
     
     return NextResponse.json({
       id,

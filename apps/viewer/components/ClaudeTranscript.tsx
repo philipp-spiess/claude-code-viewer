@@ -8,10 +8,10 @@ interface TranscriptProps {
 
 export default function ClaudeTranscript({ messages }: TranscriptProps) {
   // Group messages by conversation flow
-  const conversationGroups = [];
-  let currentGroup = null;
-  
-  messages.forEach((msg, idx) => {
+  const conversationGroups: any[] = [];
+  let currentGroup: any = null;
+
+  messages.forEach((msg) => {
     // Start a new group for root messages
     if (!msg.parentUuid) {
       if (currentGroup) {
@@ -26,18 +26,18 @@ export default function ClaudeTranscript({ messages }: TranscriptProps) {
       currentGroup.children.push(msg);
     }
   });
-  
+
   // Don't forget the last group
   if (currentGroup) {
     conversationGroups.push(currentGroup);
   }
-  
+
   return (
     <div className="font-mono">
       {conversationGroups.map((group, idx) => (
         <div key={idx} className="mb-4">
           <ClaudeMessage message={group.root} />
-          {group.children.map((child, childIdx) => (
+          {group.children.map((child: any, childIdx: number) => (
             <ClaudeMessage key={childIdx} message={child} isChild={true} />
           ))}
         </div>

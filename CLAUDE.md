@@ -17,6 +17,9 @@ pnpm dev             # Start Next.js dev server on port 3000
 
 # In apps/uploader:
 pnpm dev             # Run CLI in development mode
+
+# In apps/storage:
+npm run dev          # Start storage worker development server
 ```
 
 **Testing:**
@@ -24,33 +27,37 @@ pnpm dev             # Run CLI in development mode
 pnpm test            # Run unit tests with Vitest
 pnpm lint            # Lint codebase with Biome
 ./run-test.sh        # Run automated E2E tests
-./test-local.sh      # Set up local PostgreSQL for testing
 ```
 
-**Database:**
+**Storage Worker Deployment:**
 ```bash
-# In apps/viewer:
-pnpm db:generate     # Generate Drizzle migrations
-pnpm db:migrate      # Apply migrations to database
-pnpm db:drop         # Drop all tables
+# In apps/storage:
+npm run deploy:production  # Deploy storage worker to Cloudflare
 ```
 
 ## Architecture
 
 This is a monorepo for uploading and viewing Claude Code transcripts. It consists of:
 
-1. **apps/uploader**: CLI tool that scans `~/.claude/projects/` for JSONL transcript files and uploads them to the viewer backend. Uses Commander for CLI structure and Inquirer for interactive prompts.
+1. **apps/uploader**: CLI tool that scans `~/.claude/projects/` for JSONL transcript files and uploads them directly to the cloud storage worker. Uses Commander for CLI structure and Inquirer for interactive prompts.
 
 2. **apps/viewer**: Next.js 15 web application with:
-   - PostgreSQL database (via Supabase) with Drizzle ORM
-   - API routes at `/api/transcripts` for upload and `/api/transcripts/[id]` for retrieval
+   - No database - fetches transcripts directly from cloud storage worker
+   - API routes at `/api/transcripts` for upload (proxy to storage) and `/api/transcripts/[id]` for retrieval
    - Dynamic rendering of Claude messages with syntax highlighting
    - Components for different message types (UserMessage, AssistantMessage, ToolUse)
 
-3. **packages/shared**: Common types and utilities shared between uploader and viewer, including API endpoints and transcript parsing logic.
+3. **apps/storage**: Cloudflare Worker deployed at `https://claude-code-storage.remote.workers.dev` that:
+   - Stores transcript files in Cloudflare R2 bucket
+   - Provides GET `/{id}` and POST `/{id}` endpoints for transcript storage/retrieval
+   - Includes debug endpoint for listing all transcripts
 
-The viewer expects environment variables for database connection:
-- `DATABASE_URL`: PostgreSQL connection string
-- `DIRECT_URL`: Direct database URL for migrations
+4. **packages/shared**: Common types and utilities shared between apps, including API endpoints and transcript parsing logic.
 
-The system flow is: CLI scans local transcripts → user selects one → CLI uploads to viewer API → viewer stores in PostgreSQL → user can view at `/{id}` route.
+The system flow is: CLI scans local transcripts → user selects one → CLI uploads directly to storage worker → user views via Next.js app that fetches from storage worker at `/{id}` route.
+
+**Storage Worker Endpoints:**
+- **Production**: `https://claude-code-storage.remote.workers.dev`
+- **POST** `/{id}`: Store transcript with metadata
+- **GET** `/{id}`: Retrieve transcript and metadata  
+- **GET** `/debug/list?password=<password>`: List all transcript IDs

@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { readFile } from 'fs/promises';
 import { basename } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface UploadResult {
   success: boolean;
   message: string;
   url?: string;
 }
+
+const STORAGE_WORKER_URL = 'https://claude-code-storage.remote.workers.dev';
 
 export async function uploadTranscript(
   filePath: string,
@@ -17,16 +20,41 @@ export async function uploadTranscript(
     const content = await readFile(filePath, 'utf-8');
     const filename = basename(filePath);
 
-    // Create FormData using native Node.js FormData (available in Node 18+)
-    const formData = new FormData();
-    const blob = new Blob([content], { type: 'application/jsonl' });
-    formData.append('file', blob, filename);
+    // Extract UUID from filename (format: transcript-[UUID].jsonl) or generate new one
+    const filenameMatch = filename.match(/transcript-([a-f0-9-]+)\.jsonl/);
+    const id = filenameMatch ? filenameMatch[1] : uuidv4();
+    
+    // Parse JSONL to extract metadata
+    const lines = content.trim().split('\n');
+    let projectPath = '';
+    let summary = '';
+    
+    for (const line of lines) {
+      try {
+        const data = JSON.parse(line);
+        if (data.type === 'project_info' && data.project_path) {
+          projectPath = data.project_path;
+        }
+        if (data.type === 'summary' && data.content) {
+          summary = data.content;
+        }
+      } catch (e) {
+        // Skip invalid JSON lines
+      }
+    }
 
-    // Upload to server
-    const response = await axios.post(
-      `${serverUrl}/api/transcripts`,
-      formData,
+    // Upload directly to storage worker
+    await axios.post(
+      `${STORAGE_WORKER_URL}/${id}`,
       {
+        transcript: content,
+        directory: projectPath || undefined,
+        repo: summary || undefined,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
         maxContentLength: Infinity,
         maxBodyLength: Infinity
       }
@@ -35,14 +63,14 @@ export async function uploadTranscript(
     return {
       success: true,
       message: 'Upload successful',
-      url: response.data.id ? `${serverUrl}/${response.data.id}` : `${serverUrl}/viewer`
+      url: `${serverUrl}/${id}`
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.code === 'ECONNREFUSED') {
         return {
           success: false,
-          message: `Cannot connect to server at ${serverUrl}. Make sure the viewer server is running.`
+          message: `Cannot connect to storage service. Please check your internet connection.`
         };
       }
 

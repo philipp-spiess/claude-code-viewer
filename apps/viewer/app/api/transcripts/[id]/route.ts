@@ -1,48 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../../src/db';
-import { transcripts } from '../../../../src/db/schema';
-import { eq } from 'drizzle-orm';
+
+const STORAGE_WORKER_URL = 'https://claude-code-storage.remote.workers.dev';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
     
-    // Fetch transcript from database
-    const [transcript] = await db
-      .select()
-      .from(transcripts)
-      .where(eq(transcripts.id, id))
-      .limit(1);
+    // Fetch transcript from storage worker
+    const response = await fetch(`${STORAGE_WORKER_URL}/${id}`);
     
-    if (!transcript) {
-      return NextResponse.json(
-        { error: 'Transcript not found' },
-        { status: 404 }
-      );
+    if (!response.ok) {
+      if (response.status === 404) {
+        return NextResponse.json(
+          { error: 'Transcript not found' },
+          { status: 404 }
+        );
+      }
+      throw new Error(`Storage worker responded with status ${response.status}`);
     }
     
+    const data = await response.json();
+    
     // Parse JSONL content into structured messages
-    const lines = transcript.content.trim().split('\n');
+    const lines = data.transcript.trim().split('\n');
     const messages = [];
     
     for (const line of lines) {
       try {
-        const data = JSON.parse(line);
-        messages.push(data);
+        const parsed = JSON.parse(line);
+        messages.push(parsed);
       } catch (e) {
         console.error('Failed to parse line:', line);
       }
     }
     
     return NextResponse.json({
-      id: transcript.id,
+      id,
       messages,
-      projectPath: transcript.projectPath,
-      summary: transcript.summary,
-      uploadedAt: transcript.uploadedAt,
+      projectPath: data.directory,
+      summary: data.repo,
+      uploadedAt: data.uploaded_at,
       messageCount: messages.length,
     });
     
