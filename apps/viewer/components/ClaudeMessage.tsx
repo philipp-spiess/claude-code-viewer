@@ -102,7 +102,7 @@ export default function ClaudeMessage({ message, isChild = false }: MessageProps
           ? 'bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800' 
           : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
       }`}>
-        <span className={`${roleDisplay.color} font-mono text-lg select-none flex-shrink-0`}>
+        <span className={`${roleDisplay.color} font-mono text-lg select-none shrink-0`}>
           {roleDisplay.symbol}
         </span>
         

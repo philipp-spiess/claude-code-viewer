@@ -54,7 +54,7 @@ export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockPro
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={copyToClipboard}
-          className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+          className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded-sm transition-colors"
         >
           {copied ? 'Copied!' : 'Copy'}
         </button>

@@ -59,13 +59,13 @@ export default function MessageThread({ message, isNested = false }: MessageProp
               </span>
             )}
             {isSidechain && !isNested && (
-              <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">
+              <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-sm">
                 Sidechain
               </span>
             )}
           </div>
           {getModelInfo() && (
-            <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+            <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-sm">
               {getModelInfo()}
             </span>
           )}
