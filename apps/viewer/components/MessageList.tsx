@@ -1,53 +1,51 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import MessageView from './MessageView';
+import { useState } from 'react'
+import MessageView from './MessageView'
 
 interface Message {
-  type: string;
-  timestamp?: string;
-  isSidechain?: boolean;
-  parentUuid?: string;
-  uuid?: string;
-  message?: any;
+  type: string
+  timestamp?: string
+  isSidechain?: boolean
+  parentUuid?: string
+  uuid?: string
+  message?: any
 }
 
 interface MessageListProps {
-  messages: Message[];
+  messages: Message[]
 }
 
 export default function MessageList({ messages }: MessageListProps) {
   // Group messages by parent for visual organization
-  const messageGroups: { parent: Message | null; children: Message[] }[] = [];
-  const processedUuids = new Set<string>();
-  
+  const messageGroups: { parent: Message | null; children: Message[] }[] = []
+  const processedUuids = new Set<string>()
+
   messages.forEach((msg) => {
-    if (msg.uuid && processedUuids.has(msg.uuid)) return;
-    
+    if (msg.uuid && processedUuids.has(msg.uuid)) return
+
     // If it's a root message (no parent)
     if (!msg.parentUuid) {
-      const children = messages.filter(m => m.parentUuid === msg.uuid);
-      messageGroups.push({ parent: msg, children });
-      
-      if (msg.uuid) processedUuids.add(msg.uuid);
-      children.forEach(c => c.uuid && processedUuids.add(c.uuid));
+      const children = messages.filter((m) => m.parentUuid === msg.uuid)
+      messageGroups.push({ parent: msg, children })
+
+      if (msg.uuid) processedUuids.add(msg.uuid)
+      children.forEach((c) => c.uuid && processedUuids.add(c.uuid))
     }
-  });
-  
+  })
+
   // Add any orphaned messages
   messages.forEach((msg) => {
     if (msg.uuid && !processedUuids.has(msg.uuid)) {
-      messageGroups.push({ parent: msg, children: [] });
+      messageGroups.push({ parent: msg, children: [] })
     }
-  });
-  
+  })
+
   return (
     <div className="space-y-6">
       {messageGroups.map((group, groupIndex) => (
         <div key={groupIndex}>
-          {group.parent && (
-            <MessageItem message={group.parent} />
-          )}
+          {group.parent && <MessageItem message={group.parent} />}
           {group.children.length > 0 && (
             <div className="ml-8 border-l-2 border-gray-300 dark:border-gray-600 pl-4 mt-4 space-y-4">
               {group.children.map((child, childIndex) => (
@@ -58,36 +56,36 @@ export default function MessageList({ messages }: MessageListProps) {
         </div>
       ))}
     </div>
-  );
+  )
 }
 
 interface MessageItemProps {
-  message: Message;
-  isSidechain?: boolean;
+  message: Message
+  isSidechain?: boolean
 }
 
 function MessageItem({ message, isSidechain = false }: MessageItemProps) {
-  const [expanded, setExpanded] = useState(true);
-  
+  const [expanded, setExpanded] = useState(true)
+
   // Format timestamp
   const formatTimestamp = (timestamp: string) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    if (!timestamp) return ''
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
-    });
-  };
-  
+      second: '2-digit',
+    })
+  }
+
   // Get model info
   const getModelInfo = () => {
     if (message.message?.model) {
-      return message.message.model;
+      return message.message.model
     }
-    return null;
-  };
-  
+    return null
+  }
+
   return (
     <div>
       {/* Message Header */}
@@ -104,7 +102,12 @@ function MessageItem({ message, isSidechain = false }: MessageItemProps) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
             {message.timestamp && (
@@ -125,7 +128,7 @@ function MessageItem({ message, isSidechain = false }: MessageItemProps) {
           )}
         </div>
       </div>
-      
+
       {/* Message Content */}
       {expanded && (
         <details open className="mb-4">
@@ -139,5 +142,5 @@ function MessageItem({ message, isSidechain = false }: MessageItemProps) {
         </details>
       )}
     </div>
-  );
+  )
 }

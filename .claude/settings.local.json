@@ -21,7 +21,10 @@
       "mcp__playwright__browser_wait_for",
       "Bash(npx:*)",
       "mcp__playwright__browser_install",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm biome format:*)"
     ],
     "deny": []
   }

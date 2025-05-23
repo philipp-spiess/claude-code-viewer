@@ -1,39 +1,41 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import MessageView from './MessageView';
+import { useState } from 'react'
+import MessageView from './MessageView'
 
 interface MessageProps {
-  message: any;
-  isNested?: boolean;
+  message: any
+  isNested?: boolean
 }
 
 export default function MessageThread({ message, isNested = false }: MessageProps) {
-  const [expanded, setExpanded] = useState(true);
-  const isSidechain = message.isSidechain === true;
-  const hasChildren = message.children && message.children.length > 0;
-  
+  const [expanded, setExpanded] = useState(true)
+  const isSidechain = message.isSidechain === true
+  const hasChildren = message.children && message.children.length > 0
+
   // Format timestamp
   const formatTimestamp = (timestamp: string) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    if (!timestamp) return ''
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
-    });
-  };
-  
+      second: '2-digit',
+    })
+  }
+
   // Get model info
   const getModelInfo = () => {
     if (message.message?.model) {
-      return message.message.model;
+      return message.message.model
     }
-    return null;
-  };
-  
+    return null
+  }
+
   return (
-    <div className={`${isSidechain && !isNested ? 'ml-8 border-l-2 border-gray-300 dark:border-gray-600 pl-4' : ''}`}>
+    <div
+      className={`${isSidechain && !isNested ? 'ml-8 border-l-2 border-gray-300 dark:border-gray-600 pl-4' : ''}`}
+    >
       {/* Message Header */}
       <div className="mb-2">
         <div className="flex items-center justify-between">
@@ -49,7 +51,12 @@ export default function MessageThread({ message, isNested = false }: MessageProp
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             )}
@@ -71,7 +78,7 @@ export default function MessageThread({ message, isNested = false }: MessageProp
           )}
         </div>
       </div>
-      
+
       {/* Message Content */}
       <details open className="mb-4">
         <summary className="cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
@@ -82,19 +89,15 @@ export default function MessageThread({ message, isNested = false }: MessageProp
           <MessageView message={message} />
         </div>
       </details>
-      
+
       {/* Children */}
       {expanded && hasChildren && (
         <div className="space-y-2">
           {message.children.map((child: any, index: number) => (
-            <MessageThread 
-              key={child.uuid || index} 
-              message={child} 
-              isNested={true}
-            />
+            <MessageThread key={child.uuid || index} message={child} isNested={true} />
           ))}
         </div>
       )}
     </div>
-  );
+  )
 }

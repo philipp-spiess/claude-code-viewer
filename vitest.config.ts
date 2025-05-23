@@ -18,7 +18,12 @@ export default defineConfig({
       ],
     },
     include: ['packages/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.{idea,git,cache,output,temp}/**'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.{idea,git,cache,output,temp}/**',
+    ],
   },
   resolve: {
     alias: {

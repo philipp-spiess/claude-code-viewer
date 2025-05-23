@@ -1,47 +1,27 @@
-'use client';
-
-import ClaudeMessage from './ClaudeMessage';
+import ClaudeMessage from './ClaudeMessage'
+import { buildMessageTree, flattenMessageTree } from '@claude-viewer/shared'
+import type { TranscriptMessage } from '@claude-viewer/shared'
 
 interface TranscriptProps {
-  messages: any[];
+  messages: TranscriptMessage[]
 }
 
 export default function ClaudeTranscript({ messages }: TranscriptProps) {
-  // Group messages by conversation flow
-  const conversationGroups: any[] = [];
-  let currentGroup: any = null;
+  // Build the tree structure
+  const messageTree = buildMessageTree(messages)
 
-  messages.forEach((msg) => {
-    // Start a new group for root messages
-    if (!msg.parentUuid) {
-      if (currentGroup) {
-        conversationGroups.push(currentGroup);
-      }
-      currentGroup = {
-        root: msg,
-        children: []
-      };
-    } else if (currentGroup) {
-      // Add to current group if it's a direct child
-      currentGroup.children.push(msg);
-    }
-  });
-
-  // Don't forget the last group
-  if (currentGroup) {
-    conversationGroups.push(currentGroup);
-  }
+  // Flatten for linear rendering while preserving tree info
+  const flatMessages = flattenMessageTree(messageTree)
 
   return (
-    <div className="font-mono">
-      {conversationGroups.map((group, idx) => (
-        <div key={idx} className="mb-4">
-          <ClaudeMessage message={group.root} />
-          {group.children.map((child: any, childIdx: number) => (
-            <ClaudeMessage key={childIdx} message={child} isChild={true} />
-          ))}
-        </div>
+    <div>
+      {flatMessages.map((nodeWithDepth, idx) => (
+        <ClaudeMessage
+          key={idx}
+          message={nodeWithDepth.message}
+          toolResults={nodeWithDepth.toolResult}
+        />
       ))}
     </div>
-  );
+  )
 }

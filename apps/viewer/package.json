@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@claude-viewer/shared": "workspace:*",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/uuid": "^10.0.0",
     "lucide-react": "^0.511.0",
