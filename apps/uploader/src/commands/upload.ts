@@ -2,17 +2,18 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
-import { loadConfig, getClaudeProjectsDir } from '../config.js';
+import { getClaudeProjectsDir } from '../config.js';
 import { scanTranscripts, formatDate, formatSize, TranscriptInfo } from '../utils/scanner.js';
 import { uploadTranscript } from '../utils/uploader.js';
+
+const DEFAULT_VIEWER_URL = 'http://localhost:3000';
 
 export function createUploadCommand(): Command {
   const command = new Command('upload')
     .description('Upload a Claude transcript to the viewer')
-    .option('-s, --server <url>', 'Override server URL')
+    .option('-s, --server <url>', 'Override viewer URL for generating display link', DEFAULT_VIEWER_URL)
     .action(async (options) => {
-      const config = loadConfig();
-      const serverUrl = options.server || config.serverUrl;
+      const serverUrl = options.server;
       const projectsDir = getClaudeProjectsDir();
 
       const scanSpinner = ora('Scanning for Claude transcripts...').start();

@@ -4,7 +4,7 @@
   "description": "CLI tool for uploading Claude Code transcripts",
   "type": "module",
   "bin": {
-    "claude-viewer": "./bin/claude-upload.js"
+    "claude-code-uploader": "./bin/claude-code-uploader.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@claude-viewer/shared": "workspace:*",
-    "axios": "^1.6.2",
     "chalk": "^5.3.0",
     "commander": "^11.1.0",
     "inquirer": "^9.2.12",

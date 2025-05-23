@@ -72,9 +72,32 @@ export default {
 
         const transcript = await object.text();
         
-        return new Response(transcript, {
+        // Build metadata from custom metadata
+        const meta: Record<string, any> = {};
+        if (object.customMetadata) {
+          Object.entries(object.customMetadata).forEach(([key, value]) => {
+            meta[key] = value;
+          });
+        }
+        
+        // Add creation date from uploaded-at metadata or object uploaded timestamp
+        if (meta['uploaded-at']) {
+          meta.createdAt = meta['uploaded-at'];
+        } else if (object.uploaded) {
+          meta.createdAt = object.uploaded.toISOString();
+        }
+        
+        // Build response matching the original POST format
+        const response = {
+          transcript,
+          directory: meta.directory,
+          repo: meta.repo,
+          meta
+        };
+        
+        return new Response(JSON.stringify(response), {
           headers: { 
-            'Content-Type': 'application/jsonl',
+            'Content-Type': 'application/json',
             ...corsHeaders 
           },
         });

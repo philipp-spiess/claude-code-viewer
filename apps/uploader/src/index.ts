@@ -2,7 +2,6 @@
 import { program } from 'commander';
 import chalk from 'chalk';
 import { createUploadCommand } from './commands/upload.js';
-import { createConfigCommand } from './commands/config.js';
 
 // ASCII art banner
 const banner = chalk.blue(`
@@ -20,7 +19,6 @@ program
 
 // Add commands
 program.addCommand(createUploadCommand());
-program.addCommand(createConfigCommand());
 
 // Default action (same as upload command)
 program.action(async () => {

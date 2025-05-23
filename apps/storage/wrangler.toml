@@ -1,6 +1,7 @@
 name = "claude-code-storage"
 main = "src/index.ts"
 compatibility_date = "2025-05-23"
+account_id = "d024011cfcb16e10d259663efa2f21eb"
 
 [[r2_buckets]]
 binding = "TRANSCRIPTS_BUCKET"

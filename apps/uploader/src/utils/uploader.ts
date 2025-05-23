@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { readFile } from 'fs/promises';
 import { basename } from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -44,21 +43,22 @@ export async function uploadTranscript(
     }
 
     // Upload directly to storage worker
-    await axios.post(
-      `${STORAGE_WORKER_URL}/${id}`,
-      {
+    const response = await fetch(`${STORAGE_WORKER_URL}/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         transcript: content,
         directory: projectPath || undefined,
         repo: summary || undefined,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity
-      }
-    );
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      throw new Error(`Storage worker responded with status ${response.status}: ${errorText}`);
+    }
 
     return {
       success: true,
@@ -66,18 +66,10 @@ export async function uploadTranscript(
       url: `${serverUrl}/${id}`
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.code === 'ECONNREFUSED') {
-        return {
-          success: false,
-          message: `Cannot connect to storage service. Please check your internet connection.`
-        };
-      }
-
-      const message = error.response?.data?.message || error.message;
+    if (error instanceof TypeError && error.message.includes('fetch')) {
       return {
         success: false,
-        message: `Upload failed: ${message}`
+        message: `Cannot connect to storage service. Please check your internet connection.`
       };
     }
 

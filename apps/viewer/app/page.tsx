@@ -46,20 +46,50 @@ export default function Home() {
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      // Read file content
+      const content = await file.text();
+      
+      // Extract UUID from filename (format: transcript-[UUID].jsonl) or generate new one
+      const filenameMatch = file.name.match(/transcript-([a-f0-9-]+)\.jsonl/);
+      const id = filenameMatch ? filenameMatch[1] : crypto.randomUUID();
+      
+      // Parse JSONL to extract metadata
+      const lines = content.trim().split('\n');
+      let projectPath = '';
+      let summary = '';
+      
+      for (const line of lines) {
+        try {
+          const data = JSON.parse(line);
+          if (data.type === 'project_info' && data.project_path) {
+            projectPath = data.project_path;
+          }
+          if (data.type === 'summary' && data.content) {
+            summary = data.content;
+          }
+        } catch (e) {
+          // Skip invalid JSON lines
+        }
+      }
 
-      const response = await fetch('/api/transcripts', {
+      // Upload directly to storage worker
+      const response = await fetch(`https://claude-code-storage.remote.workers.dev/${id}`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          transcript: content,
+          directory: projectPath || undefined,
+          repo: summary || undefined,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload transcript');
+        throw new Error(`Upload failed with status ${response.status}`);
       }
 
-      const data = await response.json();
-      router.push(`/${data.id}`);
+      router.push(`/${id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
       setUploading(false);

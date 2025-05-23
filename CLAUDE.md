@@ -43,7 +43,7 @@ This is a monorepo for uploading and viewing Claude Code transcripts. It consist
 
 2. **apps/viewer**: Next.js 15 web application with:
    - No database - fetches transcripts directly from cloud storage worker
-   - API routes at `/api/transcripts` for upload (proxy to storage) and `/api/transcripts/[id]` for retrieval
+   - No API routes - frontend uploads and fetches directly from storage worker
    - Dynamic rendering of Claude messages with syntax highlighting
    - Components for different message types (UserMessage, AssistantMessage, ToolUse)
 

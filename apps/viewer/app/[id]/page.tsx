@@ -20,7 +20,7 @@ interface Transcript {
 }
 
 async function getTranscript(id: string): Promise<Transcript> {
-  const response = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/transcripts/${id}`, {
+  const response = await fetch(`https://claude-code-storage.remote.workers.dev/${id}`, {
     cache: 'no-store'
   });
 
@@ -28,7 +28,29 @@ async function getTranscript(id: string): Promise<Transcript> {
     notFound();
   }
 
-  return response.json();
+  const data = await response.json();
+  
+  // Parse JSONL content into structured messages
+  const lines = data.transcript.trim().split('\n');
+  const messages: Message[] = [];
+  
+  for (const line of lines) {
+    try {
+      const parsed = JSON.parse(line);
+      messages.push(parsed);
+    } catch (e) {
+      console.error('Failed to parse line:', line);
+    }
+  }
+  
+  return {
+    id,
+    messages,
+    projectPath: data.directory,
+    summary: data.repo,
+    uploadedAt: data.uploaded_at,
+    messageCount: messages.length,
+  };
 }
 
 export default async function TranscriptViewer({
