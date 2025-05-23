@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ['@claude-viewer/shared'],
+  experimental: {
+    outputFileTracingRoot: require('path').join(__dirname, '../../')
+  }
 };
 
 export default nextConfig;
