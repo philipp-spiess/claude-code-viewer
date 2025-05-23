@@ -1,87 +1,69 @@
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+@import "tailwindcss";
 
-@theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme static {
+  --color-\*: initial;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* https://catppuccin.com/palette/ frappe */
+  --color-rosewater: hsl(10deg, 57%, 88%);
+  --color-flamingo: hsl(0deg, 59%, 84%);
+  --color-pink: hsl(316deg, 73%, 84%);
+  --color-mauve: hsl(277deg, 59%, 76%);
+  --color-red: hsl(359deg, 68%, 71%);
+  --color-maroon: hsl(358deg, 66%, 76%);
+  --color-peach: hsl(20deg, 79%, 70%);
+  --color-yellow: hsl(40deg, 62%, 73%);
+  --color-green: hsl(96deg, 44%, 68%);
+  --color-teal: hsl(172deg, 39%, 65%);
+  --color-sky: hsl(189deg, 48%, 73%);
+  --color-sapphire: hsl(199deg, 55%, 69%);
+  --color-blue: hsl(222deg, 74%, 74%);
+  --color-lavender: hsl(239deg, 66%, 84%);
+  --color-text: hsl(227deg, 70%, 87%);
+  --color-subtext-1: hsl(227deg, 44%, 80%);
+  --color-subtext-0: hsl(228deg, 29%, 73%);
+  --color-overlay-2: hsl(228deg, 22%, 66%);
+  --color-overlay-1: hsl(227deg, 17%, 58%);
+  --color-overlay-0: hsl(229deg, 13%, 52%);
+  --color-surface-2: hsl(228deg, 13%, 44%);
+  --color-surface-1: hsl(227deg, 15%, 37%);
+  --color-surface-0: hsl(230deg, 16%, 30%);
+  --color-base: hsl(229deg, 19%, 23%);
+  --color-mantle: hsl(231deg, 19%, 20%);
+  --color-crust: hsl(229deg, 20%, 17%);
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+@custom-variant hocus (&:hover, &:focus);
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+/* Custom scrollbar styles for Windows */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+  /* Hide default scrollbar for Chrome, Safari and Opera */
+  *::-webkit-scrollbar {
+    width: 1ch;
+    height: 1ch;
   }
-}
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  *::-webkit-scrollbar-track {
+    background: var(--color-base);
   }
-}
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgb(209 213 219);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(156 163 175);
-}
-
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: rgb(55 65 81);
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-surface-1);
+    border-radius: 0;
   }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgb(75 85 99);
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--color-surface-2);
   }
-}
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
+  *::-webkit-scrollbar-thumb:active {
+    background: var(--color-overlay-0);
+  }
 
-/* Code block styling */
-pre {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Better focus styles */
-:focus-visible {
-  outline: 2px solid rgb(59 130 246);
-  outline-offset: 2px;
+  /* Firefox support */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-1) var(--color-base);
+  }
 }
