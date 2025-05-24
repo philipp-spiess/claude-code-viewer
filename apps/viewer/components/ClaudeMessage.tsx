@@ -120,18 +120,12 @@ function ToolUseDisplay({
   toolUse,
   toolResult,
   cwd,
-}: { toolUse: any; toolResult?: any; cwd?: string }) {
+}: {
+  toolUse: any;
+  toolResult?: any;
+  cwd?: string;
+}) {
   const toolName = toolUse.name || toolUse.tool_name || "Unknown Tool";
-
-  // Use ReadTool for Read tool type
-  if (toolName.toLowerCase() === "read") {
-    const toolUseWithResult = {
-      ...toolUse,
-      result: toolResult,
-      output: toolResult,
-    };
-    return <ReadTool toolUse={toolUseWithResult} cwd={cwd} />;
-  }
 
   // Default tool display for other tools
   const [expanded, setExpanded] = useState(false);
@@ -160,6 +154,17 @@ function ToolUseDisplay({
   };
 
   const lineCount = getLineCount();
+
+  // Use ReadTool for Read tool type
+  if (toolName.toLowerCase() === "read") {
+    const toolUseWithResult = {
+      ...toolUse,
+      result: toolResult,
+      output: toolResult,
+    };
+    return <ReadTool toolUse={toolUseWithResult} cwd={cwd} />;
+  }
+
   return (
     <div className="">
       <button

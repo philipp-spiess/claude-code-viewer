@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { parseTranscript } from "@claude-viewer/shared";
 

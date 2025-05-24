@@ -8,7 +8,12 @@
     "test": "vitest",
     "test:run": "vitest run"
   },
-  "keywords": ["cloudflare", "workers", "r2", "storage"],
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "r2",
+    "storage"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Cloudflare Worker for storing Claude Code transcripts in R2",

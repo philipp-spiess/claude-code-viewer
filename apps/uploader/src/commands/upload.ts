@@ -3,7 +3,7 @@ import { Command } from "commander";
 import inquirer from "inquirer";
 import ora from "ora";
 import { getClaudeProjectsDir } from "../config.js";
-import { type TranscriptInfo, formatDate, formatSize, scanTranscripts } from "../utils/scanner.js";
+import { formatDate, formatSize, scanTranscripts, type TranscriptInfo } from "../utils/scanner.js";
 import { uploadTranscript } from "../utils/uploader.js";
 
 const DEFAULT_VIEWER_URL = "http://localhost:3000";

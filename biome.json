@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.0-beta.5/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,15 +7,16 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "**/dist",
-      "**/build",
-      "**/coverage",
-      "**/.turbo",
-      "**/node_modules",
-      "**/.next",
-      "**/.claude",
-      "**/tsconfig*.json"
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/build",
+      "!**/coverage",
+      "!**/.turbo",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/.claude",
+      "!**/tsconfig*.json"
     ]
   },
   "formatter": {
@@ -24,9 +25,7 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {

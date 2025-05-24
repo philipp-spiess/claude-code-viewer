@@ -36,10 +36,7 @@ export default function CodeBlock({ code, language = "plaintext" }: CodeBlockPro
           /\b(const|let|var|function|return|if|else|for|while|class|import|export|from|async|await)\b/g,
           '<span style="color: var(--color-mauve)">$1</span>',
         )
-        .replace(
-          /(\'[^\']*\'|"[^"]*"|`[^`]*`)/g,
-          '<span style="color: var(--color-green)">$1</span>',
-        )
+        .replace(/('[^']*'|"[^"]*"|`[^`]*`)/g, '<span style="color: var(--color-green)">$1</span>')
         .replace(/(\/\/.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>');
     }
 
@@ -49,7 +46,7 @@ export default function CodeBlock({ code, language = "plaintext" }: CodeBlockPro
           /\b(def|class|import|from|return|if|else|elif|for|while|in|True|False|None|async|await)\b/g,
           '<span style="color: var(--color-mauve)">$1</span>',
         )
-        .replace(/(\'[^\']*\'|"[^"]*")/g, '<span style="color: var(--color-green)">$1</span>')
+        .replace(/('[^']*'|"[^"]*")/g, '<span style="color: var(--color-green)">$1</span>')
         .replace(/(#.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>');
     }
 
@@ -75,7 +72,7 @@ export default function CodeBlock({ code, language = "plaintext" }: CodeBlockPro
         <div className="p-3 overflow-x-auto">
           <pre className="text-text">
             <code
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: fine
               dangerouslySetInnerHTML={{
                 __html: highlightCode(code, language),
               }}
