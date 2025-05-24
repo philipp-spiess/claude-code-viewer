@@ -55,7 +55,7 @@ export default function Home() {
                 <p className="mt-[1lh]">
                   <span className="text-subtext-0">View at:</span>{" "}
                   <Link href="/15831a8e-aade-42be-a0b3-1397e06afdca" className="hover:underline">
-                    https://claude-code-viewer.vercel.app/abcd1234
+                    https://claude-code-viewer.pages.dev/abcd1234
                   </Link>
                 </p>
               </div>

@@ -22,7 +22,7 @@ USAGE
        project-gamma/transcript-2024-01-13.jsonl
 
      ✓ Uploaded transcript successfully!
-     View at: https://claude-code-viewer.vercel.app/abcd1234
+     View at: https://claude-code-viewer.pages.dev/abcd1234
 
 FILES
      ~/.claude/projects/
