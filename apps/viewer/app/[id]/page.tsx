@@ -65,10 +65,10 @@ export default async function TranscriptViewer({
 
   return (
     <div className="min-h-screen bg-base font-mono">
-      <div className="w-full max-w-[120ch] mx-auto relative">
+      <div className="w-full max-w-[120ch] mx-auto relative pt-[0.5lh]">
         {debug && (
           <div
-            className="absolute inset-0 pointer-events-none z-0"
+            className="absolute inset-0 min-h-screen pointer-events-none z-0"
             style={{
               backgroundImage: `
                 repeating-linear-gradient(to right, rgba(135, 135, 135, 0.1) 0, rgba(135, 135, 135, 0.1) 1px, transparent 1px, transparent 1ch),
@@ -80,7 +80,7 @@ export default async function TranscriptViewer({
             }}
           />
         )}
-        <div className="py-[0.5lh] px-[1.5ch] my-[0.5lh] mx-[0.5ch] outline-peach outline rounded relative z-10">
+        <div className="py-[0.5lh] px-[1.5ch] mb-[0.5lh] mx-[0.5ch] outline-peach outline rounded relative z-10">
           <div className="font-bold">
             <span className="text-peach">✻⇡</span> Claude Code Viewer
           </div>
