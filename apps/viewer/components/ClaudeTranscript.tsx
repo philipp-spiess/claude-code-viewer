@@ -1,5 +1,5 @@
 import type { TranscriptMessage } from "@claude-viewer/shared";
-import { buildMessageTree, flattenMessageTree } from "@claude-viewer/shared";
+import { buildMessageTree } from "@claude-viewer/shared";
 import ClaudeMessage from "./ClaudeMessage";
 
 interface TranscriptProps {
@@ -7,21 +7,7 @@ interface TranscriptProps {
 }
 
 export default function ClaudeTranscript({ messages }: TranscriptProps) {
-  // Build the tree structure
   const messageTree = buildMessageTree(messages);
 
-  // Flatten for linear rendering while preserving tree info
-  const flatMessages = flattenMessageTree(messageTree);
-
-  return (
-    <div>
-      {flatMessages.map((nodeWithDepth, idx) => (
-        <ClaudeMessage
-          key={idx}
-          message={nodeWithDepth.message}
-          toolResults={nodeWithDepth.toolResult}
-        />
-      ))}
-    </div>
-  );
+  return messageTree.map((message, idx) => <ClaudeMessage key={idx} message={message} />);
 }

@@ -1,9 +1,104 @@
 "use client";
 
 import { useState } from "react";
-import { formatDiff, parseClaudeEditMessage } from "../../../packages/shared/src/git-diff-parser";
 
-interface ToolUseProps {
+export function ToolUseDisplay({
+  toolUse,
+  toolResult,
+  cwd,
+}: {
+  toolUse: any;
+  toolResult?: any;
+  cwd?: string;
+}) {
+  const toolName = toolUse.name || toolUse.tool_name || "Unknown Tool";
+
+  // Default tool display for other tools
+  const [expanded, setExpanded] = useState(false);
+  const input = toolUse.input || toolUse.parameters || {};
+
+  // Format tool name with parameters
+  const getToolDisplay = () => {
+    const params: string[] = [];
+    if (input) {
+      for (const [key, value] of Object.entries(input)) {
+        if (typeof value === "string" && value.length < 50) {
+          params.push(`${key}: "${value}"`);
+        } else if (typeof value === "number" || typeof value === "boolean") {
+          params.push(`${key}: ${value}`);
+        }
+      }
+    }
+
+    return `${toolName}(${params.join(", ")})${expanded ? "" : "…"}`;
+  };
+
+  // Count lines in input
+  const getLineCount = () => {
+    const jsonStr = JSON.stringify(input, null, 2);
+    return jsonStr.split("\n").length;
+  };
+
+  const lineCount = getLineCount();
+
+  // Use ReadTool for Read tool type
+  if (toolName.toLowerCase() === "read") {
+    const toolUseWithResult = {
+      ...toolUse,
+      result: toolResult,
+      output: toolResult,
+    };
+    return <ReadTool toolUse={toolUseWithResult} cwd={cwd} />;
+  }
+
+  return (
+    <div className="">
+      <button
+        type="button"
+        className="text-purple-700 dark:text-purple-300 font-medium flex items-center gap-2 cursor-pointer hover:text-purple-900 dark:hover:text-purple-100"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <span className="font-mono">{getToolDisplay()}</span>
+      </button>
+
+      {expanded && (
+        <div className="mt-2 ml-6">
+          <div className="text-purple-600 dark:text-purple-400">⎿</div>
+
+          {/* Tool Input */}
+          <div className="ml-4 mt-1">
+            <div className="text-xs text-purple-500 dark:text-purple-400 mb-1">Input:</div>
+            <pre className="p-3 bg-gray-900 dark:bg-gray-950 text-gray-300 rounded-md overflow-x-auto text-xs font-mono">
+              {JSON.stringify(input, null, 2)}
+            </pre>
+          </div>
+
+          {/* Tool Result */}
+          {toolResult && (
+            <div className="ml-4 mt-3">
+              <div className="text-xs text-green-500 dark:text-green-400 mb-1">Result:</div>
+              <pre className="p-3 bg-gray-900 dark:bg-gray-950 text-green-300 rounded-md overflow-x-auto text-xs font-mono">
+                {typeof toolResult === "string" ? toolResult : JSON.stringify(toolResult, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          <div className="ml-4 text-xs text-purple-500 dark:text-purple-400 mt-2">
+            (Click to collapse)
+          </div>
+        </div>
+      )}
+
+      {!expanded && (
+        <div className="ml-8 text-xs text-purple-500 dark:text-purple-400 mt-1">
+          ⎿ … +{lineCount} lines{toolResult ? " + result" : ""} (Click to expand)
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface ReadToolProps {
   toolUse: {
     tool_name?: string;
     name?: string;
@@ -14,160 +109,49 @@ interface ToolUseProps {
     error?: any;
     id?: string;
   };
+  cwd?: string;
 }
-
-export default function ToolUse({ toolUse }: ToolUseProps) {
+function ReadTool({ toolUse, cwd }: ReadToolProps) {
   const [expanded, setExpanded] = useState(false);
-  const toolName = toolUse.tool_name || toolUse.name || "Unknown Tool";
 
-  // Check if this is an Edit tool with diff capability
-  const isEditTool = toolName.toLowerCase() === "edit" && toolUse.input;
-  const diff = isEditTool
-    ? parseClaudeEditMessage({
-        role: "assistant",
-        content: [{ type: "tool_use", name: "Edit", input: toolUse.input }],
-      })
-    : null;
+  // Get the file path from input
+  const filePath = toolUse.input?.file_path || toolUse.parameters?.file_path || "";
 
-  // Get icon based on tool name
-  const getToolIcon = (name: string) => {
-    const lowerName = name.toLowerCase();
-    if (lowerName.includes("bash") || lowerName.includes("command")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <title>Terminal</title>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-      );
+  // Convert absolute path to relative path
+  const getRelativePath = (absolutePath: string, workingDir?: string) => {
+    if (!workingDir || !absolutePath.startsWith(workingDir)) {
+      return absolutePath;
     }
-    if (lowerName.includes("read") || lowerName.includes("file")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <title>Read file</title>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-      );
-    }
-    if (lowerName.includes("write") || lowerName.includes("edit")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <title>Edit file</title>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-          />
-        </svg>
-      );
-    }
-    if (lowerName.includes("search") || lowerName.includes("grep")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <title>Search</title>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      );
-    }
-    return (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <title>Generic tool</title>
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-        />
-      </svg>
-    );
+    const relativePath = absolutePath.slice(workingDir.length);
+    return relativePath.startsWith("/") ? relativePath.slice(1) : relativePath;
   };
 
-  const hasError =
-    toolUse.error || (toolUse.result && typeof toolUse.result === "object" && toolUse.result.error);
+  const relativePath = getRelativePath(filePath, cwd);
+
+  const toolResult = toolUse.result || toolUse.output;
+  const lineCount = toolResult?.split("\n").length + 1 || 0;
 
   return (
-    <div className="bg-surface-0/30 rounded overflow-hidden">
-      {/* Tool header */}
+    <div className="">
       <button
         type="button"
+        className="flex flex-col text-left"
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-3 py-2 bg-surface-0 hover:bg-surface-1 transition-colors flex items-center justify-between text-left"
       >
-        <div className="flex items-center gap-2">
-          <div className={`${hasError ? "text-red" : "text-subtext-1"}`}>
-            {getToolIcon(toolName)}
-          </div>
-          <span className="text-text">{toolName}</span>
-          {hasError && <span className="text-red">Error</span>}
-        </div>
-        <svg
-          className={`w-4 h-4 text-subtext-1 transition-transform ${expanded ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <title>Toggle tool details</title>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <span>
+          Read({relativePath || "file"}){expanded ? "" : "…"}
+        </span>
+        {!expanded && (
+          <span>
+            ⎿ Read {lineCount} lines <span className="text-subtext-0">(Click to expand)</span>
+          </span>
+        )}
       </button>
 
-      {/* Tool content */}
       {expanded && (
-        <div className="p-3 space-y-3">
-          {/* Parameters or Input */}
-          {(toolUse.parameters || toolUse.input) && (
-            <div>
-              <h4 className="text-subtext-0 uppercase tracking-wider mb-2 text-xs">
-                {toolUse.input ? "Input" : "Parameters"}
-              </h4>
-              {diff ? (
-                <div className="bg-base rounded overflow-x-auto">
-                  <pre className="text-text p-3 font-mono text-sm">{formatDiff(diff)}</pre>
-                </div>
-              ) : (
-                <pre className="bg-base p-3 rounded overflow-x-auto text-text">
-                  {JSON.stringify(toolUse.parameters || toolUse.input, null, 2)}
-                </pre>
-              )}
-            </div>
-          )}
-
-          {/* Result/Output */}
-          {(toolUse.result || toolUse.output) && (
-            <div>
-              <h4 className="text-subtext-0 uppercase tracking-wider mb-2 text-xs">
-                {hasError ? "Error" : "Result"}
-              </h4>
-              <div className="bg-base rounded p-3 overflow-x-auto">
-                <pre className={`${hasError ? "text-red" : "text-text"}`}>
-                  {typeof (toolUse.result || toolUse.output) === "string"
-                    ? toolUse.result || toolUse.output
-                    : JSON.stringify(toolUse.result || toolUse.output, null, 2)}
-                </pre>
-              </div>
-            </div>
-          )}
+        <div className="flex gap-[1ch]">
+          <div className="text-purple-600 dark:text-purple-400">⎿</div>
+          <pre className=" text-subtext-0 overflow-auto">{toolResult}</pre>
         </div>
       )}
     </div>
