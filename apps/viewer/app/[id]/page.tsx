@@ -2,6 +2,8 @@ import type { TranscriptMessage } from "@claude-viewer/shared";
 import { notFound } from "next/navigation";
 import ClaudeTranscript from "../../components/ClaudeTranscript";
 
+export const runtime = 'edge';
+
 interface Transcript {
   id: string;
   messages: TranscriptMessage[];
