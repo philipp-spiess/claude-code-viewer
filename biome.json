@@ -7,7 +7,16 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["**/dist", "**/build", "**/coverage", "**/.turbo", "**/node_modules"]
+    "ignore": [
+      "**/dist",
+      "**/build",
+      "**/coverage",
+      "**/.turbo",
+      "**/node_modules",
+      "**/.next",
+      "**/.claude",
+      "**/tsconfig*.json"
+    ]
   },
   "formatter": {
     "enabled": true,

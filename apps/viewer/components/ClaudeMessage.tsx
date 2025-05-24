@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import type { TranscriptMessage } from '@claude-viewer/shared'
-
+import { useState } from 'react'
 
 interface MessageProps {
   message: TranscriptMessage
@@ -108,7 +107,7 @@ export default function ClaudeMessage({ message, toolResults }: MessageProps) {
               key={idx}
               toolUse={toolUse}
               toolResult={toolResults?.[toolUse.id]}
-              cwd={message.cwd}
+              cwd={'cwd' in message ? message.cwd : undefined}
             />
           ))}
         </div>
@@ -117,8 +116,11 @@ export default function ClaudeMessage({ message, toolResults }: MessageProps) {
   )
 }
 
-
-function ToolUseDisplay({ toolUse, toolResult, cwd }: { toolUse: any; toolResult?: any; cwd?: string }) {
+function ToolUseDisplay({
+  toolUse,
+  toolResult,
+  cwd,
+}: { toolUse: any; toolResult?: any; cwd?: string }) {
   const toolName = toolUse.name || toolUse.tool_name || 'Unknown Tool'
 
   // Use ReadTool for Read tool type
@@ -126,7 +128,7 @@ function ToolUseDisplay({ toolUse, toolResult, cwd }: { toolUse: any; toolResult
     const toolUseWithResult = {
       ...toolUse,
       result: toolResult,
-      output: toolResult
+      output: toolResult,
     }
     return <ReadTool toolUse={toolUseWithResult} cwd={cwd} />
   }
@@ -206,7 +208,6 @@ function ToolUseDisplay({ toolUse, toolResult, cwd }: { toolUse: any; toolResult
   )
 }
 
-
 interface ReadToolProps {
   toolUse: {
     tool_name?: string
@@ -238,15 +239,14 @@ function ReadTool({ toolUse, cwd }: ReadToolProps) {
   const relativePath = getRelativePath(filePath, cwd)
 
   const toolResult = toolUse.result || toolUse.output
-  const lineCount = toolResult?.split('\n').length+1 || 0
+  const lineCount = toolResult?.split('\n').length + 1 || 0
 
   return (
     <div className="">
-      <button
-        className="flex flex-col text-left"
-        onClick={() => setExpanded(!expanded)}
-      >
-        <span>Read({relativePath || 'file'}){expanded ? '' : '…'}</span>
+      <button className="flex flex-col text-left" onClick={() => setExpanded(!expanded)}>
+        <span>
+          Read({relativePath || 'file'}){expanded ? '' : '…'}
+        </span>
         {!expanded && (
           <span>
             ⎿ Read {lineCount} lines <span className="text-subtext-0">(Click to expand)</span>
@@ -255,11 +255,9 @@ function ReadTool({ toolUse, cwd }: ReadToolProps) {
       </button>
 
       {expanded && (
-        <div className='flex gap-[1ch]'>
+        <div className="flex gap-[1ch]">
           <div className="text-purple-600 dark:text-purple-400">⎿</div>
-          <pre className=" text-subtext-0 overflow-auto">
-            {toolResult}
-          </pre>
+          <pre className=" text-subtext-0 overflow-auto">{toolResult}</pre>
         </div>
       )}
     </div>

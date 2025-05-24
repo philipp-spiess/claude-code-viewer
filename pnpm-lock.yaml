@@ -14,6 +14,9 @@ importers:
       '@types/node':
         specifier: ^22.10.2
         version: 22.15.21
+      next:
+        specifier: 15.1.8
+        version: 15.1.8(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       typescript:
         specifier: ^5.7.2
         version: 5.8.3
