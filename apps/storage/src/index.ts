@@ -1,90 +1,90 @@
 interface Env {
-  TRANSCRIPTS_BUCKET: R2Bucket
-  DEBUG_PASSWORD: string
+  TRANSCRIPTS_BUCKET: R2Bucket;
+  DEBUG_PASSWORD: string;
 }
 
 interface UploadRequest {
-  directory?: string
-  repo?: string
-  transcript: string // JSONL content
+  directory?: string;
+  repo?: string;
+  transcript: string; // JSONL content
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url)
-    const path = url.pathname
+    const url = new URL(request.url);
+    const path = url.pathname;
 
     // CORS headers for all responses
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    }
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    };
 
     // Handle preflight requests
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders })
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers: corsHeaders });
     }
 
     try {
       // Debug endpoint to list all transcripts
-      if (path === '/debug/list' && request.method === 'GET') {
-        const password = url.searchParams.get('password')
+      if (path === "/debug/list" && request.method === "GET") {
+        const password = url.searchParams.get("password");
         if (!password || password !== env.DEBUG_PASSWORD) {
-          return new Response('Unauthorized', {
+          return new Response("Unauthorized", {
             status: 401,
             headers: corsHeaders,
-          })
+          });
         }
 
-        const objects = await env.TRANSCRIPTS_BUCKET.list()
-        const transcriptIds = objects.objects.map((obj) => obj.key)
+        const objects = await env.TRANSCRIPTS_BUCKET.list();
+        const transcriptIds = objects.objects.map((obj) => obj.key);
 
         return new Response(JSON.stringify({ transcripts: transcriptIds }), {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...corsHeaders,
           },
-        })
+        });
       }
 
       // Extract ID from path (format: /<id>)
-      const idMatch = path.match(/^\/([a-f0-9-]{36})$/)
+      const idMatch = path.match(/^\/([a-f0-9-]{36})$/);
       if (!idMatch) {
-        return new Response('Invalid transcript ID format', {
+        return new Response("Invalid transcript ID format", {
           status: 400,
           headers: corsHeaders,
-        })
+        });
       }
 
-      const transcriptId = idMatch[1]
+      const transcriptId = idMatch[1];
 
       // GET /<id> - Retrieve transcript
-      if (request.method === 'GET') {
-        const object = await env.TRANSCRIPTS_BUCKET.get(transcriptId)
+      if (request.method === "GET") {
+        const object = await env.TRANSCRIPTS_BUCKET.get(transcriptId);
 
         if (!object) {
-          return new Response('Transcript not found', {
+          return new Response("Transcript not found", {
             status: 404,
             headers: corsHeaders,
-          })
+          });
         }
 
-        const transcript = await object.text()
+        const transcript = await object.text();
 
         // Build metadata from custom metadata
-        const meta: Record<string, any> = {}
+        const meta: Record<string, any> = {};
         if (object.customMetadata) {
-          Object.entries(object.customMetadata).forEach(([key, value]) => {
-            meta[key] = value
-          })
+          for (const [key, value] of Object.entries(object.customMetadata)) {
+            meta[key] = value;
+          }
         }
 
         // Add creation date from uploaded-at metadata or object uploaded timestamp
-        if (meta['uploaded-at']) {
-          meta.createdAt = meta['uploaded-at']
+        if (meta["uploaded-at"]) {
+          meta.createdAt = meta["uploaded-at"];
         } else if (object.uploaded) {
-          meta.createdAt = object.uploaded.toISOString()
+          meta.createdAt = object.uploaded.toISOString();
         }
 
         // Build response matching the original POST format
@@ -93,76 +93,76 @@ export default {
           directory: meta.directory,
           repo: meta.repo,
           meta,
-        }
+        };
 
         return new Response(JSON.stringify(response), {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...corsHeaders,
           },
-        })
+        });
       }
 
       // POST /<id> - Create/update transcript
-      if (request.method === 'POST') {
-        const contentType = request.headers.get('Content-Type')
-        if (!contentType || !contentType.includes('application/json')) {
-          return new Response('Content-Type must be application/json', {
+      if (request.method === "POST") {
+        const contentType = request.headers.get("Content-Type");
+        if (!contentType || !contentType.includes("application/json")) {
+          return new Response("Content-Type must be application/json", {
             status: 400,
             headers: corsHeaders,
-          })
+          });
         }
 
-        let uploadData: UploadRequest
+        let uploadData: UploadRequest;
         try {
-          uploadData = await request.json()
+          uploadData = await request.json();
         } catch {
-          return new Response('Invalid JSON body', {
+          return new Response("Invalid JSON body", {
             status: 400,
             headers: corsHeaders,
-          })
+          });
         }
 
         // Validate required fields
         if (!uploadData.transcript) {
-          return new Response('Missing required field: transcript', {
+          return new Response("Missing required field: transcript", {
             status: 400,
             headers: corsHeaders,
-          })
+          });
         }
 
         // Validate that transcript is valid JSONL (each line should be valid JSON)
-        const lines = uploadData.transcript.trim().split('\n')
+        const lines = uploadData.transcript.trim().split("\n");
         for (const line of lines) {
           if (line.trim()) {
             try {
-              JSON.parse(line)
+              JSON.parse(line);
             } catch {
-              return new Response('Invalid JSONL format in transcript field', {
+              return new Response("Invalid JSONL format in transcript field", {
                 status: 400,
                 headers: corsHeaders,
-              })
+              });
             }
           }
         }
 
         // Prepare metadata
         const metadata: Record<string, string> = {
-          'uploaded-at': new Date().toISOString(),
-          'content-type': 'application/jsonl',
-        }
+          "uploaded-at": new Date().toISOString(),
+          "content-type": "application/jsonl",
+        };
 
         if (uploadData.directory) {
-          metadata['directory'] = uploadData.directory
+          metadata.directory = uploadData.directory;
         }
 
         if (uploadData.repo) {
-          metadata['repo'] = uploadData.repo
+          metadata.repo = uploadData.repo;
         }
 
         await env.TRANSCRIPTS_BUCKET.put(transcriptId, uploadData.transcript, {
           customMetadata: metadata,
-        })
+        });
 
         return new Response(
           JSON.stringify({
@@ -170,28 +170,28 @@ export default {
             transcriptId,
             directory: uploadData.directory,
             repo: uploadData.repo,
-            message: 'Transcript saved successfully',
+            message: "Transcript saved successfully",
           }),
           {
             status: 201,
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               ...corsHeaders,
             },
           },
-        )
+        );
       }
 
-      return new Response('Method not allowed', {
+      return new Response("Method not allowed", {
         status: 405,
         headers: corsHeaders,
-      })
+      });
     } catch (error) {
-      console.error('Error:', error)
-      return new Response('Internal server error', {
+      console.error("Error:", error);
+      return new Response("Internal server error", {
         status: 500,
         headers: corsHeaders,
-      })
+      });
     }
   },
-}
+};

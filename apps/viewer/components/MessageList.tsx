@@ -1,45 +1,47 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import MessageView from './MessageView'
+import { useState } from "react";
+import MessageView from "./MessageView";
 
 interface Message {
-  type: string
-  timestamp?: string
-  isSidechain?: boolean
-  parentUuid?: string
-  uuid?: string
-  message?: any
+  type: string;
+  timestamp?: string;
+  isSidechain?: boolean;
+  parentUuid?: string;
+  uuid?: string;
+  message?: any;
 }
 
 interface MessageListProps {
-  messages: Message[]
+  messages: Message[];
 }
 
 export default function MessageList({ messages }: MessageListProps) {
   // Group messages by parent for visual organization
-  const messageGroups: { parent: Message | null; children: Message[] }[] = []
-  const processedUuids = new Set<string>()
+  const messageGroups: { parent: Message | null; children: Message[] }[] = [];
+  const processedUuids = new Set<string>();
 
-  messages.forEach((msg) => {
-    if (msg.uuid && processedUuids.has(msg.uuid)) return
+  for (const msg of messages) {
+    if (msg.uuid && processedUuids.has(msg.uuid)) continue;
 
     // If it's a root message (no parent)
     if (!msg.parentUuid) {
-      const children = messages.filter((m) => m.parentUuid === msg.uuid)
-      messageGroups.push({ parent: msg, children })
+      const children = messages.filter((m) => m.parentUuid === msg.uuid);
+      messageGroups.push({ parent: msg, children });
 
-      if (msg.uuid) processedUuids.add(msg.uuid)
-      children.forEach((c) => c.uuid && processedUuids.add(c.uuid))
+      if (msg.uuid) processedUuids.add(msg.uuid);
+      for (const c of children) {
+        if (c.uuid) processedUuids.add(c.uuid);
+      }
     }
-  })
+  }
 
   // Add any orphaned messages
-  messages.forEach((msg) => {
+  for (const msg of messages) {
     if (msg.uuid && !processedUuids.has(msg.uuid)) {
-      messageGroups.push({ parent: msg, children: [] })
+      messageGroups.push({ parent: msg, children: [] });
     }
-  })
+  }
 
   return (
     <div className="space-y-6">
@@ -56,35 +58,35 @@ export default function MessageList({ messages }: MessageListProps) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 interface MessageItemProps {
-  message: Message
-  isSidechain?: boolean
+  message: Message;
+  isSidechain?: boolean;
 }
 
 function MessageItem({ message, isSidechain = false }: MessageItemProps) {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(true);
 
   // Format timestamp
   const formatTimestamp = (timestamp: string) => {
-    if (!timestamp) return ''
-    const date = new Date(timestamp)
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    })
-  }
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
 
   // Get model info
   const getModelInfo = () => {
     if (message.message?.model) {
-      return message.message.model
+      return message.message.model;
     }
-    return null
-  }
+    return null;
+  };
 
   return (
     <div>
@@ -93,15 +95,17 @@ function MessageItem({ message, isSidechain = false }: MessageItemProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => setExpanded(!expanded)}
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               <svg
-                className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`}
+                className={`w-4 h-4 transition-transform ${expanded ? "rotate-90" : ""}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Toggle message visibility</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -142,5 +146,5 @@ function MessageItem({ message, isSidechain = false }: MessageItemProps) {
         </details>
       )}
     </div>
-  )
+  );
 }

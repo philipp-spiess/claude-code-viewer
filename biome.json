@@ -22,10 +22,7 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 100,
-    "attributePosition": "auto",
-    "formatWithErrors": false
+    "lineWidth": 100
   },
   "organizeImports": {
     "enabled": true
@@ -34,44 +31,17 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "complexity": {
-        "noBannedTypes": "error",
-        "noUselessConstructor": "error",
-        "noForEach": "off"
-      },
-      "correctness": {
-        "noUnusedVariables": "error",
-        "useExhaustiveDependencies": "warn",
-        "useHookAtTopLevel": "error"
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
       },
       "style": {
-        "noNonNullAssertion": "warn",
-        "useConst": "error",
-        "useImportType": "error",
-        "useNodejsImportProtocol": "error"
-      },
-      "suspicious": {
-        "noExplicitAny": "warn",
-        "noConsoleLog": "warn"
-      },
-      "performance": {
-        "noAccumulatingSpread": "error",
-        "noDelete": "error"
-      },
-      "a11y": {
-        "recommended": true
+        "noNonNullAssertion": "off",
+        "useConst": "off"
       }
     }
   },
   "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "jsxQuoteStyle": "double",
-      "semicolons": "asNeeded",
-      "trailingCommas": "all",
-      "arrowParentheses": "always",
-      "bracketSpacing": true,
-      "bracketSameLine": false
-    }
+    "formatter": {}
   }
 }

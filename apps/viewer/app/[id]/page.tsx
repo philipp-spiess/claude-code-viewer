@@ -1,37 +1,37 @@
-import type { TranscriptMessage } from '@claude-viewer/shared'
-import { notFound } from 'next/navigation'
-import ClaudeTranscript from '../../components/ClaudeTranscript'
+import type { TranscriptMessage } from "@claude-viewer/shared";
+import { notFound } from "next/navigation";
+import ClaudeTranscript from "../../components/ClaudeTranscript";
 
 interface Transcript {
-  id: string
-  messages: TranscriptMessage[]
-  projectPath?: string
-  summary?: string
-  uploadedAt: string
-  messageCount?: number
+  id: string;
+  messages: TranscriptMessage[];
+  projectPath?: string;
+  summary?: string;
+  uploadedAt: string;
+  messageCount?: number;
 }
 
 async function getTranscript(id: string): Promise<Transcript> {
   const response = await fetch(`https://claude-code-storage.remote.workers.dev/${id}`, {
-    cache: 'no-store',
-  })
+    cache: "no-store",
+  });
 
   if (!response.ok) {
-    notFound()
+    notFound();
   }
 
-  const data = await response.json()
+  const data = await response.json();
 
   // Parse JSONL content into structured messages
-  const lines = data.transcript.trim().split('\n')
-  const messages: TranscriptMessage[] = []
+  const lines = data.transcript.trim().split("\n");
+  const messages: TranscriptMessage[] = [];
 
   for (const line of lines) {
     try {
-      const parsed = JSON.parse(line)
-      messages.push(parsed)
-    } catch (e) {
-      console.error('Failed to parse line:', line)
+      const parsed = JSON.parse(line);
+      messages.push(parsed);
+    } catch (_e) {
+      console.error("Failed to parse line:", line);
     }
   }
 
@@ -42,26 +42,26 @@ async function getTranscript(id: string): Promise<Transcript> {
     summary: data.repo,
     uploadedAt: data.uploaded_at,
     messageCount: messages.length,
-  }
+  };
 }
 
 export default async function TranscriptViewer({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { id } = await params
-  const { debug } = await searchParams
-  const transcript = await getTranscript(id)
+  const { id } = await params;
+  const { debug } = await searchParams;
+  const transcript = await getTranscript(id);
 
   // Extract summary from the last summary message
-  const lastSummaryMessage = transcript.messages.filter((msg) => msg.type === 'summary').pop()
-  const summary = lastSummaryMessage?.summary
+  const lastSummaryMessage = transcript.messages.filter((msg) => msg.type === "summary").pop();
+  const summary = lastSummaryMessage?.summary;
 
   // Filter out summary messages from display
-  const filteredMessages = transcript.messages.filter((msg) => msg.type !== 'summary')
+  const filteredMessages = transcript.messages.filter((msg) => msg.type !== "summary");
 
   return (
     <div className="min-h-screen bg-base font-mono">
@@ -75,8 +75,8 @@ export default async function TranscriptViewer({
                 repeating-linear-gradient(to bottom, rgba(135, 135, 135, 0.1) 0, rgba(135, 135, 135, 0.1) 1px, transparent 1px, transparent 1lh),
                 linear-gradient(to right, transparent calc(100% - 1px), rgba(135, 135, 135, 0.1) calc(100% - 1px))
               `,
-              backgroundSize: '1ch 1lh, 1ch 1lh, 100% 100%',
-              backgroundPosition: '0 0, 0 0, 0 0',
+              backgroundSize: "1ch 1lh, 1ch 1lh, 100% 100%",
+              backgroundPosition: "0 0, 0 0, 0 0",
             }}
           />
         )}
@@ -103,5 +103,5 @@ export default async function TranscriptViewer({
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-import { buildMessageTree, flattenMessageTree } from '@claude-viewer/shared'
-import type { TranscriptMessage } from '@claude-viewer/shared'
-import ClaudeMessage from './ClaudeMessage'
+import { buildMessageTree, flattenMessageTree } from "@claude-viewer/shared";
+import type { TranscriptMessage } from "@claude-viewer/shared";
+import ClaudeMessage from "./ClaudeMessage";
 
 interface TranscriptProps {
-  messages: TranscriptMessage[]
+  messages: TranscriptMessage[];
 }
 
 export default function ClaudeTranscript({ messages }: TranscriptProps) {
   // Build the tree structure
-  const messageTree = buildMessageTree(messages)
+  const messageTree = buildMessageTree(messages);
 
   // Flatten for linear rendering while preserving tree info
-  const flatMessages = flattenMessageTree(messageTree)
+  const flatMessages = flattenMessageTree(messageTree);
 
   return (
     <div>
@@ -23,5 +23,5 @@ export default function ClaudeTranscript({ messages }: TranscriptProps) {
         />
       ))}
     </div>
-  )
+  );
 }

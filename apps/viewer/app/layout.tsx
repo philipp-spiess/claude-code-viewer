@@ -1,22 +1,22 @@
-import type { Metadata } from 'next'
-import { IBM_Plex_Mono } from 'next/font/google'
-import './globals.css'
+import type { Metadata } from "next";
+import { IBM_Plex_Mono } from "next/font/google";
+import "./globals.css";
 
 const ibmPlexMono = IBM_Plex_Mono({
-  variable: '--font-ibm-plex-mono',
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-})
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
-  title: 'Claude Transcript Viewer',
-  description: 'View your Claude conversation transcripts in a beautiful interface',
-}
+  title: "Claude Transcript Viewer",
+  description: "View your Claude conversation transcripts in a beautiful interface",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -24,5 +24,5 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }

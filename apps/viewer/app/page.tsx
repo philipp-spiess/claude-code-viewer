@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
           <h1 className="font-bold mb-[0.5lh]">
             <span className="text-peach">✻⇡</span> CLAUDE-CODE-UPLOADER(1)
           </h1>
-          <div className="border-b border-surface-1 mb-[0.5lh]"></div>
+          <div className="border-b border-surface-1 mb-[0.5lh]" />
         </div>
 
         <div className="space-y-[1lh]">
@@ -31,7 +31,7 @@ export default function Home() {
                 web-based viewer.
               </p>
               <p>
-                It automatically discovers transcript files in{' '}
+                It automatically discovers transcript files in{" "}
                 <span className="text-cyan-400">~/.claude/projects/</span> and provides an
                 interactive interface for selecting and uploading transcripts.
               </p>
@@ -53,7 +53,7 @@ export default function Home() {
               <div>
                 <p className="text-subtext-0">✓ Uploaded transcript successfully!</p>
                 <p className="mt-[1lh]">
-                  <span className="text-subtext-0">View at:</span>{' '}
+                  <span className="text-subtext-0">View at:</span>{" "}
                   <Link href="/15831a8e-aade-42be-a0b3-1397e06afdca" className="hover:underline">
                     https://claude-code-viewer.vercel.app/abcd1234
                   </Link>
@@ -115,5 +115,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }

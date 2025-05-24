@@ -1,56 +1,57 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 
 interface UserMessageProps {
   message: {
-    content?: string | Array<{ type: string; text?: string; [key: string]: any }>
-    timestamp?: string
-    attachments?: any[]
-  }
+    content?: string | Array<{ type: string; text?: string; [key: string]: any }>;
+    timestamp?: string;
+    attachments?: any[];
+  };
 }
 
 export default function UserMessage({ message }: UserMessageProps) {
-  const [_expanded, _setExpanded] = useState(true)
+  const [_expanded, _setExpanded] = useState(true);
 
-  if (!message.content) return null
+  if (!message.content) return null;
 
   // Function to render content - handles both string and array formats
   const renderContent = () => {
-    if (typeof message.content === 'string') {
-      return formatContent(message.content)
+    if (typeof message.content === "string") {
+      return formatContent(message.content);
     }
 
     if (Array.isArray(message.content)) {
       const text = message.content
         .map((item) => {
-          if (item.type === 'text' && item.text) {
-            return item.text
+          if (item.type === "text" && item.text) {
+            return item.text;
           }
           // Handle other content types if needed
-          return ''
+          return "";
         })
-        .join('')
-      return formatContent(text)
+        .join("");
+      return formatContent(text);
     }
 
-    return ''
-  }
+    return "";
+  };
 
   // Format content to handle command messages
   const formatContent = (text: string) => {
     // Parse command messages
-    const commandMatch = text.match(/<command-message>([\s\S]*?)<\/command-message>/)
-    const commandNameMatch = text.match(/<command-name>([\s\S]*?)<\/command-name>/)
+    const commandMatch = text.match(/<command-message>([\s\S]*?)<\/command-message>/);
+    const commandNameMatch = text.match(/<command-name>([\s\S]*?)<\/command-name>/);
 
     if (commandMatch && commandNameMatch) {
-      const commandMessage = commandMatch[1]
-      const commandName = commandNameMatch[1]
+      const commandMessage = commandMatch[1];
+      const commandName = commandNameMatch[1];
 
       return (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <title>Command</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -62,12 +63,12 @@ export default function UserMessage({ message }: UserMessageProps) {
           </div>
           <div className="italic">{commandMessage}</div>
         </div>
-      )
+      );
     }
 
     // Regular text
-    return text
-  }
+    return text;
+  };
 
   return (
     <div className="py-2">
@@ -82,7 +83,7 @@ export default function UserMessage({ message }: UserMessageProps) {
               {message.attachments.map((attachment, idx) => (
                 <div key={idx} className="text-subtext-1 flex items-center gap-1">
                   <span>📎</span>
-                  {attachment.name || 'Attachment'}
+                  {attachment.name || "Attachment"}
                 </div>
               ))}
             </div>
@@ -90,5 +91,5 @@ export default function UserMessage({ message }: UserMessageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

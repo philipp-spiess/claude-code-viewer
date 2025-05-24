@@ -1,36 +1,36 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 
 interface CodeBlockProps {
-  code: string
-  language?: string
+  code: string;
+  language?: string;
 }
 
-export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false)
+export default function CodeBlock({ code, language = "plaintext" }: CodeBlockProps) {
+  const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err)
+      console.error("Failed to copy:", err);
     }
-  }
+  };
 
   // Simple syntax highlighting for common tokens using Catppuccin colors
   const highlightCode = (code: string, lang: string) => {
-    if (lang === 'json') {
+    if (lang === "json") {
       return code
         .replace(/("[^"]*":)/g, '<span style="color: var(--color-blue)">$1</span>')
         .replace(/("[^"]*")/g, '<span style="color: var(--color-green)">$1</span>')
         .replace(/(\b\d+\b)/g, '<span style="color: var(--color-mauve)">$1</span>')
-        .replace(/\b(true|false|null)\b/g, '<span style="color: var(--color-peach)">$1</span>')
+        .replace(/\b(true|false|null)\b/g, '<span style="color: var(--color-peach)">$1</span>');
     }
 
-    if (lang === 'javascript' || lang === 'typescript' || lang === 'jsx' || lang === 'tsx') {
+    if (lang === "javascript" || lang === "typescript" || lang === "jsx" || lang === "tsx") {
       return code
         .replace(
           /\b(const|let|var|function|return|if|else|for|while|class|import|export|from|async|await)\b/g,
@@ -40,30 +40,31 @@ export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockPro
           /(\'[^\']*\'|"[^"]*"|`[^`]*`)/g,
           '<span style="color: var(--color-green)">$1</span>',
         )
-        .replace(/(\/\/.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>')
+        .replace(/(\/\/.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>');
     }
 
-    if (lang === 'python') {
+    if (lang === "python") {
       return code
         .replace(
           /\b(def|class|import|from|return|if|else|elif|for|while|in|True|False|None|async|await)\b/g,
           '<span style="color: var(--color-mauve)">$1</span>',
         )
         .replace(/(\'[^\']*\'|"[^"]*")/g, '<span style="color: var(--color-green)">$1</span>')
-        .replace(/(#.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>')
+        .replace(/(#.*$)/gm, '<span style="color: var(--color-overlay-0)">$1</span>');
     }
 
-    return code
-  }
+    return code;
+  };
 
   return (
     <div className="relative group my-3">
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
+          type="button"
           onClick={copyToClipboard}
           className="px-2 py-1 text-xs bg-surface-1 hover:bg-surface-2 text-text rounded transition-colors"
         >
-          {copied ? 'Copied!' : 'Copy'}
+          {copied ? "Copied!" : "Copy"}
         </button>
       </div>
 
@@ -74,6 +75,7 @@ export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockPro
         <div className="p-3 overflow-x-auto">
           <pre className="text-text">
             <code
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
               dangerouslySetInnerHTML={{
                 __html: highlightCode(code, language),
               }}
@@ -82,5 +84,5 @@ export default function CodeBlock({ code, language = 'plaintext' }: CodeBlockPro
         </div>
       </div>
     </div>
-  )
+  );
 }
