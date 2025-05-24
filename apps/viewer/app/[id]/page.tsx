@@ -87,7 +87,7 @@ export default async function TranscriptViewer({
           {summary && <div className="text-subtext-0 ml-[3ch] mt-[1lh]">{summary}</div>}
         </div>
 
-        <div className="mt-[2lh] relative z-10">
+        <div className="mt-[1.5lh] relative z-10">
           <ClaudeTranscript messages={filteredMessages} />
 
           <details className="mt-8 border border-surface-1 rounded">
