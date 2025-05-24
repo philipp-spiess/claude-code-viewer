@@ -4,11 +4,13 @@ import { program } from "commander";
 import { createUploadCommand } from "./commands/upload.js";
 
 // ASCII art banner
-const _banner = chalk.blue(`
+const banner = chalk.blue(`
  ╭──────────────────────────────╮
  │     Claude Code Uploader     │
  ╰──────────────────────────────╯
 `);
+
+console.log(banner);
 
 program
   .name("claude-upload")

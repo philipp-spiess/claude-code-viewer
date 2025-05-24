@@ -1,4 +1,4 @@
-import type { MessageNode, TranscriptMessage } from "./types.js";
+import type { MessageNode, ToolUse, TranscriptMessage } from "./types.js";
 
 /**
  * Builds a tree structure from messages based on parentUuid relationships
@@ -38,7 +38,9 @@ export function buildMessageTree(messages: TranscriptMessage[]): MessageNode[] {
 
       // If this is an assistant message, try to link tool results
       if (msg.type === "assistant" && msg.message?.content) {
-        const toolUses = msg.message.content.filter((item: any) => item.type === "tool_use");
+        const toolUses = msg.message.content.filter(
+          (item): item is ToolUse => item.type === "tool_use",
+        );
         if (toolUses.length > 0) {
           // Look for matching tool results
           const toolResults: Record<string, any> = {};
