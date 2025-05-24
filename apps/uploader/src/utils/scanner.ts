@@ -1,7 +1,7 @@
-import { readdir, stat, readFile } from 'fs/promises'
-import { join, relative } from 'path'
 import { existsSync } from 'fs'
+import { join, relative } from 'path'
 import { parseTranscript } from '@claude-viewer/shared'
+import { readFile, readdir, stat } from 'fs/promises'
 
 export interface TranscriptInfo {
   path: string

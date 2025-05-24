@@ -1,6 +1,6 @@
-import ClaudeMessage from './ClaudeMessage'
 import { buildMessageTree, flattenMessageTree } from '@claude-viewer/shared'
 import type { TranscriptMessage } from '@claude-viewer/shared'
+import ClaudeMessage from './ClaudeMessage'
 
 interface TranscriptProps {
   messages: TranscriptMessage[]

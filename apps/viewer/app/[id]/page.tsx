@@ -1,6 +1,6 @@
+import type { TranscriptMessage } from '@claude-viewer/shared'
 import { notFound } from 'next/navigation'
 import ClaudeTranscript from '../../components/ClaudeTranscript'
-import type { TranscriptMessage } from '@claude-viewer/shared'
 
 interface Transcript {
   id: string

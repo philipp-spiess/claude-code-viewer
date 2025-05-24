@@ -1,9 +1,9 @@
+import chalk from 'chalk'
 import { Command } from 'commander'
 import inquirer from 'inquirer'
-import chalk from 'chalk'
 import ora from 'ora'
 import { getClaudeProjectsDir } from '../config.js'
-import { scanTranscripts, formatDate, formatSize, TranscriptInfo } from '../utils/scanner.js'
+import { type TranscriptInfo, formatDate, formatSize, scanTranscripts } from '../utils/scanner.js'
 import { uploadTranscript } from '../utils/uploader.js'
 
 const DEFAULT_VIEWER_URL = 'http://localhost:3000'

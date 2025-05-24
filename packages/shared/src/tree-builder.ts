@@ -1,4 +1,4 @@
-import { TranscriptMessage, MessageNode } from './types.js'
+import type { MessageNode, TranscriptMessage } from './types.js'
 
 /**
  * Builds a tree structure from messages based on parentUuid relationships
@@ -104,7 +104,7 @@ export function buildMessageTree(messages: TranscriptMessage[]): MessageNode[] {
 export function flattenMessageTree(tree: MessageNode[]): (MessageNode & { depth: number })[] {
   const result: (MessageNode & { depth: number })[] = []
 
-  const flatten = (nodes: MessageNode[], depth: number = 0) => {
+  const flatten = (nodes: MessageNode[], depth = 0) => {
     nodes.forEach((node) => {
       result.push({ ...node, depth })
       if (node.children.length > 0) {

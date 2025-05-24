@@ -1,8 +1,8 @@
 'use client'
 
-import UserMessage from './UserMessage'
 import AssistantMessage from './AssistantMessage'
 import ToolUse from './ToolUse'
+import UserMessage from './UserMessage'
 
 interface MessageProps {
   message: any

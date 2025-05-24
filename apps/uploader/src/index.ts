@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { program } from 'commander'
 import chalk from 'chalk'
+import { program } from 'commander'
 import { createUploadCommand } from './commands/upload.js'
 
 // ASCII art banner

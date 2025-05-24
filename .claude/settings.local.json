@@ -24,7 +24,8 @@
       "Bash(npx tsc:*)",
       "WebFetch(domain:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm biome format:*)"
+      "Bash(pnpm biome format:*)",
+      "Bash(pnpm lint:*)"
     ],
     "deny": []
   }

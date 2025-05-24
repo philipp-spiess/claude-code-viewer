@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { parseClaudeEditMessage, formatDiff } from '../../../packages/shared/src/git-diff-parser'
+import { formatDiff, parseClaudeEditMessage } from '../../../packages/shared/src/git-diff-parser'
 
 interface ToolUseProps {
   toolUse: {
