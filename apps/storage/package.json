@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy:production": "wrangler deploy",
-    "test": "vitest",
-    "test:run": "vitest run"
+    "test": "cd ../.. && pnpm test"
   },
   "keywords": [
     "cloudflare",

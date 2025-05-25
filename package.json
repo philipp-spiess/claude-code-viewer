@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "pnpm --parallel run dev",
     "build": "pnpm --filter @claude-viewer/shared build && pnpm --parallel run build",
-    "test": "pnpm --parallel run test",
+    "test": "vitest",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",

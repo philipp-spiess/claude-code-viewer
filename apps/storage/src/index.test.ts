@@ -36,8 +36,10 @@ describe("Storage Worker", () => {
       const response = await worker.fetch(request, mockEnv);
 
       expect(response.status).toBe(200);
-      expect(await response.text()).toBe(transcriptContent);
-      expect(response.headers.get("Content-Type")).toBe("application/jsonl");
+      expect(await response.text()).toMatchInlineSnapshot(
+        `"{"transcript":"{\\"type\\":\\"message\\",\\"content\\":\\"Hello\\"}\\n{\\"type\\":\\"message\\",\\"content\\":\\"World\\"}","meta":{}}"`,
+      );
+      expect(response.headers.get("Content-Type")).toBe("application/json");
       expect(mockR2Bucket.get).toHaveBeenCalledWith(transcriptId);
     });
 

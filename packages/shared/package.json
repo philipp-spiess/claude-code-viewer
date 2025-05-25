@@ -13,7 +13,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "cd ../.. && pnpm test"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
