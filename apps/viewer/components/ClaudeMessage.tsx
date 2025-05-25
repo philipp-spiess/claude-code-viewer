@@ -8,7 +8,6 @@ interface MessageProps {
 export default function ClaudeMessage({
   message: { message, toolResult, children },
 }: MessageProps) {
-  console.log({ message, toolResult });
   const getRoleDisplay = () => {
     if (message.type === "user") {
       return { symbol: ">", color: "text-subtext-0" };

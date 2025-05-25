@@ -9,5 +9,7 @@ interface TranscriptProps {
 export default function ClaudeTranscript({ messages }: TranscriptProps) {
   const messageTree = buildMessageTree(messages);
 
+  console.log({ messageTree });
+
   return messageTree.map((message, idx) => <ClaudeMessage key={idx} message={message} />);
 }
