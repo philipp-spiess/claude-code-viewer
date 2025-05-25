@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="[scrollbar-gutter:stable]">
       <body className={`${ibmPlexMono.variable} antialiased text-text bg-base font-mono`}>
         {children}
       </body>
