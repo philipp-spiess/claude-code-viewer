@@ -4,17 +4,17 @@ NAME
      claude-code-uploader - upload Claude Code transcripts to web viewer
 
 SYNOPSIS
-     npx claude-code-uploader
+     npx -y claude-code-uploader
 
 DESCRIPTION
-     The npx claude-code-uploader utility scans your local Claude Code project
+     The npx -y claude-code-uploader utility scans your local Claude Code project
      directories for transcript files and uploads them to a web-based viewer.
 
      It automatically discovers transcript files in ~/.claude/projects/ and
      provides an interactive interface for selecting and uploading transcripts.
 
 USAGE
-     $ npx claude-code-uploader
+     $ npx -y claude-code-uploader
 
      ? Select a transcript to upload: (Use arrow keys)
      ❯ project-alpha/transcript-2024-01-15.jsonl
@@ -38,7 +38,7 @@ EXIT STATUS
 EXAMPLES
      Upload a transcript interactively:
 
-           $ npx claude-code-uploader
+           $ npx -y claude-code-uploader
 
 SEE ALSO
      claude(1)

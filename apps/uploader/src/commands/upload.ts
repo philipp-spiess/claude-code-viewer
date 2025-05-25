@@ -56,6 +56,7 @@ export function createUploadCommand(): Command {
         if (result.success) {
           uploadSpinner.succeed("Upload complete!");
           if (result.url) {
+            console.log(chalk.green(`View at: ${result.url}`));
           }
         } else {
           uploadSpinner.fail("Upload failed");

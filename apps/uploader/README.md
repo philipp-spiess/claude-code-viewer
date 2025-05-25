@@ -1,76 +1,48 @@
-# Claude Transcript Uploader
-
-A CLI tool for uploading Claude conversation transcripts to the viewer application.
-
-## Installation
-
-From the monorepo root:
-
-```bash
-pnpm install
-pnpm build
 ```
+CLAUDE-CODE-UPLOADER(1)                                    CLAUDE-CODE-UPLOADER(1)
 
-## Usage
+NAME
+     claude-code-uploader - upload Claude Code transcripts to web viewer
 
-### Upload a transcript
+SYNOPSIS
+     npx -y claude-code-uploader
 
-The default command scans your `~/.claude/projects/` directory and presents an interactive list of transcripts:
+DESCRIPTION
+     The npx -y claude-code-uploader utility scans your local Claude Code project
+     directories for transcript files and uploads them to a web-based viewer.
 
-```bash
-pnpm claude-upload
+     It automatically discovers transcript files in ~/.claude/projects/ and
+     provides an interactive interface for selecting and uploading transcripts.
+
+USAGE
+     $ npx -y claude-code-uploader
+
+     ? Select a transcript to upload: (Use arrow keys)
+     ❯ project-alpha/transcript-2024-01-15.jsonl
+       project-beta/transcript-2024-01-14.jsonl
+       project-gamma/transcript-2024-01-13.jsonl
+
+     ✓ Uploaded transcript successfully!
+     View at: https://claude-code-viewer.pages.dev/abcd1234
+
+FILES
+     ~/.claude/projects/
+             Default directory where Claude Code stores project transcripts
+
+EXIT STATUS
+     The claude-code-uploader utility exits 0 on success, and >0 if an error
+     occurs.
+
+     0       Successful upload
+     1       Upload failed or user cancelled
+
+EXAMPLES
+     Upload a transcript interactively:
+
+           $ npx -y claude-code-uploader
+
+SEE ALSO
+     claude(1)
+
+                                                         CLAUDE-CODE-UPLOADER(1)
 ```
-
-Or explicitly use the upload command:
-
-```bash
-pnpm claude-upload upload
-```
-
-### Override server URL
-
-```bash
-pnpm claude-upload upload --server https://your-server.com
-```
-
-### Configure default server
-
-```bash
-pnpm claude-upload config
-```
-
-## Features
-
-- 📁 Automatically scans `~/.claude/projects/` for transcript files
-- 📅 Sorts transcripts by date (newest first)
-- 🎨 Color-coded interactive selection
-- 📊 Shows file size and summary for each transcript
-- ⚡ Fast upload with progress indication
-- 🔧 Configurable server URL
-- 💾 Persistent configuration in `~/.claude-viewer/config.json`
-
-## Development
-
-Run in development mode:
-
-```bash
-pnpm dev
-```
-
-Build the project:
-
-```bash
-pnpm build
-```
-
-## Configuration
-
-The uploader stores its configuration in `~/.claude-viewer/config.json`:
-
-```json
-{
-  "serverUrl": "http://localhost:3000"
-}
-```
-
-You can modify this file directly or use the `config` command.

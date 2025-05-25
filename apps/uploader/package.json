@@ -1,6 +1,7 @@
 {
   "name": "claude-code-uploader",
-  "version": "0.1.2",
+  "version": "0.1.4",
+  "license": "MIT",
   "description": "CLI tool for uploading Claude Code transcripts",
   "bin": {
     "claude-code-uploader": "./dist/index.js"
@@ -8,23 +9,25 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "node esbuild.config.mjs",
-    "start": "node dist/index.js",
-    "claude-viewer": "node dist/index.js"
+    "start": "node dist/index.js"
   },
-  "dependencies": {
-    "@claude-viewer/shared": "workspace:*",
-    "chalk": "^5.3.0",
-    "commander": "^11.1.0",
-    "inquirer": "^9.2.12",
-    "ora": "^8.0.1",
-    "uuid": "^11.1.0"
-  },
+  "files": [
+    "dist/",
+    "README.md",
+    "package.json"
+  ],
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
     "@types/node": "^20.10.0",
     "@types/uuid": "^10.0.0",
     "esbuild": "^0.21.5",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "@claude-viewer/shared": "workspace:*",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1",
+    "uuid": "^11.1.0"
   }
 }

@@ -16,8 +16,8 @@ export async function uploadTranscript(filePath: string, serverUrl: string): Pro
     const content = await readFile(filePath, "utf-8");
     const filename = basename(filePath);
 
-    // Extract UUID from filename (format: transcript-[UUID].jsonl) or generate new one
-    const filenameMatch = filename.match(/transcript-([a-f0-9-]+)\.jsonl/);
+    // Extract UUID from filename (format: [path/]UUID.jsonl) or generate new one
+    const filenameMatch = filename.match(/([a-f0-9-]{36})\.jsonl$/);
     const id = filenameMatch ? filenameMatch[1] : uuidv4();
 
     // Parse JSONL to extract metadata

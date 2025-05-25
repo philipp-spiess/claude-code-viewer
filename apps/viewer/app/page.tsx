@@ -19,16 +19,16 @@ export default function Home() {
 
           <section>
             <h2 className="font-bold">SYNOPSIS</h2>
-            <p className="ml-[7ch] font-bold text-peach">npx claude-code-uploader</p>
+            <p className="ml-[7ch] font-bold text-peach">npx -y claude-code-uploader</p>
           </section>
 
           <section>
             <h2 className="font-bold">DESCRIPTION</h2>
             <div className="ml-[7ch] space-y-[1lh]">
               <p>
-                The <span className="font-bold">npx claude-code-uploader</span> utility scans your
-                local Claude Code project directories for transcript files and uploads them to a
-                web-based viewer.
+                The <span className="font-bold">npx -y claude-code-uploader</span> utility scans
+                your local Claude Code project directories for transcript files and uploads them to
+                a web-based viewer.
               </p>
               <p>
                 It automatically discovers transcript files in{" "}
@@ -42,7 +42,7 @@ export default function Home() {
             <h2 className="font-bold">USAGE</h2>
             <div className="ml-[7ch] space-y-4">
               <div>
-                <p className="font-bold">$ npx claude-code-uploader</p>
+                <p className="font-bold">$ npx -y claude-code-uploader</p>
                 <div className="text-subtext-0 mt-[1lh]">
                   <p>? Select a transcript to upload: (Use arrow keys)</p>
                   <p className="mt-[1lh]">❯ project-alpha/transcript-2024-01-15.jsonl</p>
@@ -90,7 +90,7 @@ export default function Home() {
             <h2 className="font-bold">EXAMPLES</h2>
             <div className="ml-[7ch]">
               <p>Upload a transcript interactively:</p>
-              <p className="ml-[7ch] text-peach">$ npx claude-code-uploader</p>
+              <p className="ml-[7ch] text-peach">$ npx -y claude-code-uploader</p>
             </div>
           </section>
 
