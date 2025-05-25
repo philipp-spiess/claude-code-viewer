@@ -2,7 +2,7 @@ import type { TranscriptMessage } from "@claude-viewer/shared";
 import { notFound } from "next/navigation";
 import ClaudeTranscript from "../../components/ClaudeTranscript";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 
 interface Transcript {
   id: string;
@@ -89,20 +89,29 @@ export default async function TranscriptViewer({
           {summary && <div className="text-subtext-0 ml-[3ch] mt-[1lh]">{summary}</div>}
         </div>
 
-        <div className="mt-[1.5lh] relative z-10">
+        <div className="mt-[1.5lh] pb-[2lh] border-b border-surface-1">
           <ClaudeTranscript messages={filteredMessages} />
-
-          <details className="mt-8 border border-surface-1 rounded">
-            <summary className="cursor-pointer p-3 bg-surface-0 hover:bg-surface-1 transition-colors text-subtext-1">
-              Debug View (Raw JSON)
-            </summary>
-            <div className="p-3 bg-base border-t border-surface-1">
-              <pre className="text-xs text-subtext-0 overflow-auto max-h-96">
-                {JSON.stringify(transcript, null, 2)}
-              </pre>
-            </div>
-          </details>
         </div>
+
+        <footer className="mt-[1lh] text-subtext-0 flex gap-[3ch] justify-between">
+          <span>
+            <a
+              href="https://github.com/philipp-spiess/claude-code-viewer"
+              target="_blank"
+              className="hover:underline text-text"
+              rel="noopener"
+            >
+              View Source on GitHub
+            </a>
+          </span>
+          <span>Made by 🤖 in 🇦🇹</span>
+        </footer>
+        <details className="mt-[1lh] text-subtext-0">
+          <summary className="cursor-pointer">Debug View (Raw JSON)</summary>
+          <pre className="text-xs text-subtext-0 overflow-auto max-w-full whitespace-pre-wrap">
+            {JSON.stringify(transcript, null, 2)}
+          </pre>
+        </details>
       </div>
     </div>
   );

@@ -1,8 +1,22 @@
 {
   "name": "claude-code-uploader",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "description": "CLI tool for uploading Claude Code transcripts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philipp-spiess/claude-code-viewer"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude code",
+    "transcript",
+    "uploader",
+    "viewer",
+    "cli",
+    "anthropic"
+  ],
   "bin": {
     "claude-code-uploader": "./dist/index.js"
   },

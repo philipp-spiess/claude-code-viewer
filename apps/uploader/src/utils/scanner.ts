@@ -33,7 +33,7 @@ async function findJsonlFiles(dir: string, baseDir: string): Promise<TranscriptI
           // Parse JSONL content into messages to find last summary message
           const lines = content.trim().split("\n");
           const messages: any[] = [];
-          
+
           for (const line of lines) {
             try {
               const parsed = JSON.parse(line);
@@ -42,13 +42,14 @@ async function findJsonlFiles(dir: string, baseDir: string): Promise<TranscriptI
               // Skip unparseable lines
             }
           }
-          
+
           // Extract summary from the last summary message (same as viewer logic)
           const lastSummaryMessage = messages.filter((msg) => msg.type === "summary").pop();
-          const summary = lastSummaryMessage?.summary || 
-                         transcript.metadata?.summary || 
-                         transcript.title || 
-                         "No summary available";
+          const summary =
+            lastSummaryMessage?.summary ||
+            transcript.metadata?.summary ||
+            transcript.title ||
+            "No summary available";
 
           files.push({
             path: fullPath,
