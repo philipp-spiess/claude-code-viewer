@@ -1,6 +1,6 @@
 {
   "name": "claude-code-uploader",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "CLI tool for uploading Claude Code transcripts",
   "bin": {
     "claude-code-uploader": "./dist/index.js"
