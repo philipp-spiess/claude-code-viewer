@@ -153,6 +153,7 @@ describe("Storage Worker", () => {
         customMetadata: {
           "uploaded-at": expect.any(String),
           "content-type": "application/jsonl",
+          v: "1",
         },
       });
     });

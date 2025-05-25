@@ -8,6 +8,8 @@ interface MessageProps {
 export default function ClaudeMessage({
   message: { message, toolResult, children },
 }: MessageProps) {
+  const resume = children.map((message, idx) => <ClaudeMessage key={idx} message={message} />);
+
   const getRoleDisplay = () => {
     if (message.type === "user") {
       return { symbol: ">", color: "text-subtext-0" };
@@ -80,7 +82,7 @@ export default function ClaudeMessage({
   const roleDisplay = getRoleDisplay();
   const isUser = message.type === "user";
 
-  if (!hasContent && message.type !== "summary") return null;
+  if (!hasContent && message.type !== "summary") return resume;
 
   return (
     <>
@@ -113,9 +115,7 @@ export default function ClaudeMessage({
           ))}
       </div>
 
-      {children.map((message, idx) => (
-        <ClaudeMessage key={idx} message={message} />
-      ))}
+      {resume}
     </>
   );
 }

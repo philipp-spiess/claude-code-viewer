@@ -78,7 +78,7 @@ export interface AssistantMessage extends BaseMessage {
     content: AssistantContent[];
     stop_reason: string | null;
     stop_sequence?: string | null;
-    usage: Usage;
+    usage: any;
   };
   costUSD?: number;
   durationMs?: number;

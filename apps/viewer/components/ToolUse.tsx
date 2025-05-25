@@ -52,46 +52,28 @@ export function ToolUseDisplay({
   }
 
   return (
-    <div className="">
+    <div>
       <button
         type="button"
-        className="text-purple-700 dark:text-purple-300 font-medium flex items-center gap-2 cursor-pointer hover:text-purple-900 dark:hover:text-purple-100"
+        className="flex flex-col text-left"
         onClick={() => setExpanded(!expanded)}
       >
-        <span className="font-mono">{getToolDisplay()}</span>
+        <span>{getToolDisplay()}</span>
+        {!expanded && (
+          <span>
+            ⎿ Returned {lineCount} JSON lines{" "}
+            <span className="text-subtext-0">(Click to expand)</span>
+          </span>
+        )}
       </button>
-
       {expanded && (
-        <div className="mt-2 ml-6">
+        <div className="flex gap-[1ch]">
           <div className="text-purple-600 dark:text-purple-400">⎿</div>
-
-          {/* Tool Input */}
-          <div className="ml-4 mt-1">
-            <div className="text-xs text-purple-500 dark:text-purple-400 mb-1">Input:</div>
-            <pre className="p-3 bg-gray-900 dark:bg-gray-950 text-gray-300 rounded-md overflow-x-auto text-xs font-mono">
-              {JSON.stringify(input, null, 2)}
-            </pre>
-          </div>
-
-          {/* Tool Result */}
-          {toolResult && (
-            <div className="ml-4 mt-3">
-              <div className="text-xs text-green-500 dark:text-green-400 mb-1">Result:</div>
-              <pre className="p-3 bg-gray-900 dark:bg-gray-950 text-green-300 rounded-md overflow-x-auto text-xs font-mono">
-                {typeof toolResult === "string" ? toolResult : JSON.stringify(toolResult, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          <div className="ml-4 text-xs text-purple-500 dark:text-purple-400 mt-2">
-            (Click to collapse)
-          </div>
-        </div>
-      )}
-
-      {!expanded && (
-        <div className="ml-8 text-xs text-purple-500 dark:text-purple-400 mt-1">
-          ⎿ … +{lineCount} lines{toolResult ? " + result" : ""} (Click to expand)
+          <pre className="text-subtext-0">
+            {`Input\n=====\n\n${JSON.stringify(input, null, 2)}\n\nOutput:\n=======\n\n${
+              typeof toolResult === "string" ? toolResult : JSON.stringify(toolResult, null, 2)
+            }`}
+          </pre>
         </div>
       )}
     </div>
@@ -132,7 +114,7 @@ function ReadTool({ toolUse, cwd }: ReadToolProps) {
   const lineCount = toolResult?.split("\n").length + 1 || 0;
 
   return (
-    <div className="">
+    <div>
       <button
         type="button"
         className="flex flex-col text-left"
@@ -151,7 +133,7 @@ function ReadTool({ toolUse, cwd }: ReadToolProps) {
       {expanded && (
         <div className="flex gap-[1ch]">
           <div className="text-purple-600 dark:text-purple-400">⎿</div>
-          <pre className=" text-subtext-0 overflow-auto">{toolResult}</pre>
+          <pre className=" text-subtext-0 max-w-full whitespace-pre-wrap">{toolResult}</pre>
         </div>
       )}
     </div>
