@@ -150,6 +150,7 @@ export default {
         const metadata: Record<string, string> = {
           "uploaded-at": new Date().toISOString(),
           "content-type": "application/jsonl",
+          "v": "1",
         };
 
         if (uploadData.directory) {
