@@ -22,11 +22,30 @@ describe("Storage Worker", () => {
   describe("GET /<id>", () => {
     it("should return transcript when it exists", async () => {
       const transcriptId = "123e4567-e89b-12d3-a456-426614174000";
-      const transcriptContent =
-        '{"type":"message","content":"Hello"}\n{"type":"message","content":"World"}';
+      const storedData = JSON.stringify({
+        transcript: {
+          id: transcriptId,
+          messages: [
+            { type: "user", content: "Hello" },
+            { type: "assistant", content: "World" }
+          ],
+          messageCount: 2
+        },
+        title: "Test Conversation",
+        metadata: {
+          uploadedAt: "2023-01-01T00:00:00.000Z",
+          messageCount: 2,
+          lastModified: "2023-01-01T00:00:00.000Z",
+          leafMessageId: transcriptId
+        }
+      });
 
       mockR2Bucket.get.mockResolvedValue({
-        text: () => Promise.resolve(transcriptContent),
+        text: () => Promise.resolve(storedData),
+        customMetadata: {
+          "uploaded-at": "2023-01-01T00:00:00.000Z",
+          "title": "Test Conversation"
+        }
       });
 
       const request = new Request(`https://test.com/${transcriptId}`, {
@@ -36,9 +55,10 @@ describe("Storage Worker", () => {
       const response = await worker.fetch(request, mockEnv);
 
       expect(response.status).toBe(200);
-      expect(await response.text()).toMatchInlineSnapshot(
-        `"{"transcript":"{\\"type\\":\\"message\\",\\"content\\":\\"Hello\\"}\\n{\\"type\\":\\"message\\",\\"content\\":\\"World\\"}","meta":{}}"`,
-      );
+      const responseData = await response.json();
+      expect(responseData.transcript.id).toBe(transcriptId);
+      expect(responseData.title).toBe("Test Conversation");
+      expect(responseData.metadata.messageCount).toBe(2);
       expect(response.headers.get("Content-Type")).toBe("application/json");
       expect(mockR2Bucket.get).toHaveBeenCalledWith(transcriptId);
     });
@@ -71,12 +91,24 @@ describe("Storage Worker", () => {
   });
 
   describe("POST /<id>", () => {
-    it("should save transcript with metadata", async () => {
+    it("should save conversation with metadata", async () => {
       const transcriptId = "123e4567-e89b-12d3-a456-426614174000";
       const uploadData = {
-        directory: "/home/user/project",
-        repo: "my-repo",
-        transcript: '{"type":"message","content":"Hello"}\n{"type":"message","content":"World"}',
+        transcript: {
+          id: transcriptId,
+          messages: [
+            { type: "user", content: "Hello" },
+            { type: "assistant", content: "World" }
+          ],
+          messageCount: 2
+        },
+        title: "Test Conversation",
+        metadata: {
+          uploadedAt: "2023-01-01T00:00:00.000Z",
+          messageCount: 2,
+          lastModified: "2023-01-01T00:00:00.000Z",
+          leafMessageId: transcriptId
+        }
       };
 
       mockR2Bucket.put.mockResolvedValue(undefined);
@@ -93,38 +125,34 @@ describe("Storage Worker", () => {
 
       expect(response.status).toBe(201);
 
-      const responseData = (await response.json()) as {
-        success: boolean;
-        transcriptId: string;
-        directory?: string;
-        repo?: string;
-        message: string;
-      };
+      const responseData = await response.json();
       expect(responseData).toEqual({
         success: true,
         transcriptId,
-        directory: uploadData.directory,
-        repo: uploadData.repo,
-        message: "Transcript saved successfully",
+        title: "Test Conversation",
+        messageCount: 2,
+        message: "Conversation saved successfully",
       });
 
-      expect(mockR2Bucket.put).toHaveBeenCalledWith(transcriptId, uploadData.transcript, {
+      expect(mockR2Bucket.put).toHaveBeenCalledWith(transcriptId, JSON.stringify(uploadData), {
         customMetadata: expect.objectContaining({
           "uploaded-at": expect.any(String),
-          "content-type": "application/jsonl",
-          directory: uploadData.directory,
-          repo: uploadData.repo,
+          "content-type": "application/json",
+          "v": "2",
+          "title": "Test Conversation",
+          "message-count": "2",
+          "leaf-message-id": transcriptId,
+          "last-modified": "2023-01-01T00:00:00.000Z",
         }),
       });
     });
 
-    it("should save transcript without optional metadata", async () => {
+    it("should return 400 for missing required fields", async () => {
       const transcriptId = "123e4567-e89b-12d3-a456-426614174000";
       const uploadData = {
-        transcript: '{"type":"message","content":"Hello"}',
+        transcript: { id: transcriptId, messages: [], messageCount: 0 },
+        // Missing title and metadata
       };
-
-      mockR2Bucket.put.mockResolvedValue(undefined);
 
       const request = new Request(`https://test.com/${transcriptId}`, {
         method: "POST",
@@ -136,26 +164,8 @@ describe("Storage Worker", () => {
 
       const response = await worker.fetch(request, mockEnv);
 
-      expect(response.status).toBe(201);
-
-      const responseData = (await response.json()) as {
-        success: boolean;
-        transcriptId: string;
-        directory?: string;
-        repo?: string;
-        message: string;
-      };
-      expect(responseData.success).toBe(true);
-      expect(responseData.directory).toBeUndefined();
-      expect(responseData.repo).toBeUndefined();
-
-      expect(mockR2Bucket.put).toHaveBeenCalledWith(transcriptId, uploadData.transcript, {
-        customMetadata: {
-          "uploaded-at": expect.any(String),
-          "content-type": "application/jsonl",
-          v: "1",
-        },
-      });
+      expect(response.status).toBe(400);
+      expect(await response.text()).toBe("Missing required fields: transcript, title, metadata");
     });
 
     it("should return 400 for wrong content type", async () => {
@@ -192,7 +202,7 @@ describe("Storage Worker", () => {
       expect(await response.text()).toBe("Invalid JSON body");
     });
 
-    it("should return 400 for missing transcript field", async () => {
+    it("should return 400 for missing title field", async () => {
       const transcriptId = "123e4567-e89b-12d3-a456-426614174000";
 
       const request = new Request(`https://test.com/${transcriptId}`, {
@@ -200,32 +210,16 @@ describe("Storage Worker", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ directory: "/home/user" }),
-      });
-
-      const response = await worker.fetch(request, mockEnv);
-
-      expect(response.status).toBe(400);
-      expect(await response.text()).toBe("Missing required field: transcript");
-    });
-
-    it("should return 400 for invalid JSONL format", async () => {
-      const transcriptId = "123e4567-e89b-12d3-a456-426614174000";
-
-      const request = new Request(`https://test.com/${transcriptId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          transcript: 'invalid json line\n{"valid": "json"}',
+        body: JSON.stringify({ 
+          transcript: { id: transcriptId, messages: [], messageCount: 0 },
+          metadata: { uploadedAt: "2023-01-01T00:00:00.000Z", messageCount: 0, lastModified: "2023-01-01T00:00:00.000Z", leafMessageId: transcriptId }
         }),
       });
 
       const response = await worker.fetch(request, mockEnv);
 
       expect(response.status).toBe(400);
-      expect(await response.text()).toBe("Invalid JSONL format in transcript field");
+      expect(await response.text()).toBe("Missing required fields: transcript, title, metadata");
     });
   });
 
@@ -233,8 +227,26 @@ describe("Storage Worker", () => {
     it("should return transcript list with correct password", async () => {
       const mockObjects = {
         objects: [
-          { key: "123e4567-e89b-12d3-a456-426614174000" },
-          { key: "987fcdeb-51d2-43a1-b456-426614174999" },
+          { 
+            key: "123e4567-e89b-12d3-a456-426614174000",
+            customMetadata: {
+              title: "Test Conversation 1",
+              "message-count": "5",
+              "uploaded-at": "2023-01-01T00:00:00.000Z",
+              "leaf-message-id": "123e4567-e89b-12d3-a456-426614174000",
+              "last-modified": "2023-01-01T00:00:00.000Z"
+            }
+          },
+          { 
+            key: "987fcdeb-51d2-43a1-b456-426614174999",
+            customMetadata: {
+              title: "Test Conversation 2",
+              "message-count": "3",
+              "uploaded-at": "2023-01-02T00:00:00.000Z",
+              "leaf-message-id": "987fcdeb-51d2-43a1-b456-426614174999",
+              "last-modified": "2023-01-02T00:00:00.000Z"
+            }
+          },
         ],
       };
 
@@ -248,14 +260,15 @@ describe("Storage Worker", () => {
 
       expect(response.status).toBe(200);
 
-      const responseData = (await response.json()) as {
-        transcripts: string[];
-      };
-      expect(responseData).toEqual({
-        transcripts: [
-          "123e4567-e89b-12d3-a456-426614174000",
-          "987fcdeb-51d2-43a1-b456-426614174999",
-        ],
+      const responseData = await response.json();
+      expect(responseData.transcripts).toHaveLength(2);
+      expect(responseData.transcripts[0]).toEqual({
+        id: "123e4567-e89b-12d3-a456-426614174000",
+        title: "Test Conversation 1",
+        uploadedAt: "2023-01-01T00:00:00.000Z",
+        messageCount: 5,
+        leafMessageId: "123e4567-e89b-12d3-a456-426614174000",
+        lastModified: "2023-01-01T00:00:00.000Z"
       });
 
       expect(mockR2Bucket.list).toHaveBeenCalled();

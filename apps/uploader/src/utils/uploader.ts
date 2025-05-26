@@ -1,6 +1,4 @@
-import { readFile } from "node:fs/promises";
-import { basename } from "node:path";
-import { v4 as uuidv4 } from "uuid";
+import type { SessionInfo } from './SessionManager.js';
 
 export interface UploadResult {
   success: boolean;
@@ -10,46 +8,31 @@ export interface UploadResult {
 
 const STORAGE_WORKER_URL = "https://claude-code-storage.remote.workers.dev";
 
-export async function uploadTranscript(filePath: string, serverUrl: string): Promise<UploadResult> {
+export async function uploadConversation(sessionInfo: SessionInfo, serverUrl: string): Promise<UploadResult> {
   try {
-    // Read the file content
-    const content = await readFile(filePath, "utf-8");
-    const filename = basename(filePath);
-
-    // Extract UUID from filename (format: [path/]UUID.jsonl) or generate new one
-    const filenameMatch = filename.match(/([a-f0-9-]{36})\.jsonl$/);
-    const id = filenameMatch ? filenameMatch[1] : uuidv4();
-
-    // Parse JSONL to extract metadata
-    const lines = content.trim().split("\n");
-    let projectPath = "";
-    let summary = "";
-
-    for (const line of lines) {
-      try {
-        const data = JSON.parse(line);
-        if (data.type === "project_info" && data.project_path) {
-          projectPath = data.project_path;
-        }
-        if (data.type === "summary" && data.content) {
-          summary = data.content;
-        }
-      } catch (_e) {
-        // Skip invalid JSON lines
+    // Prepare the upload data in the new JSON format
+    const uploadData = {
+      transcript: {
+        id: sessionInfo.id,
+        messages: sessionInfo.transcript.messages,
+        messageCount: sessionInfo.transcript.messages.length
+      },
+      title: sessionInfo.summary,
+      metadata: {
+        uploadedAt: new Date().toISOString(),
+        messageCount: sessionInfo.transcript.messages.length,
+        lastModified: sessionInfo.lastModified.toISOString(),
+        leafMessageId: sessionInfo.id
       }
-    }
+    };
 
-    // Upload directly to storage worker
-    const response = await fetch(`${STORAGE_WORKER_URL}/${id}`, {
+    // Upload to storage worker
+    const response = await fetch(`${STORAGE_WORKER_URL}/${sessionInfo.id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        transcript: content,
-        directory: projectPath || undefined,
-        repo: summary || undefined,
-      }),
+      body: JSON.stringify(uploadData),
     });
 
     if (!response.ok) {
@@ -57,10 +40,12 @@ export async function uploadTranscript(filePath: string, serverUrl: string): Pro
       throw new Error(`Storage worker responded with status ${response.status}: ${errorText}`);
     }
 
+    const result = await response.json();
+
     return {
       success: true,
-      message: "Upload successful",
-      url: `${serverUrl}/${id}`,
+      message: `Conversation "${sessionInfo.summary.slice(0, 50)}..." uploaded successfully`,
+      url: `${serverUrl}/${sessionInfo.id}`,
     };
   } catch (error) {
     if (error instanceof TypeError && error.message.includes("fetch")) {
@@ -75,4 +60,12 @@ export async function uploadTranscript(filePath: string, serverUrl: string): Pro
       message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
     };
   }
+}
+
+// Legacy function for backward compatibility in case it's used elsewhere
+export async function uploadTranscript(filePath: string, serverUrl: string): Promise<UploadResult> {
+  return {
+    success: false,
+    message: "Legacy uploadTranscript is deprecated. Use uploadConversation instead.",
+  };
 }

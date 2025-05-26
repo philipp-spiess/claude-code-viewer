@@ -4,9 +4,18 @@ interface Env {
 }
 
 interface UploadRequest {
-  directory?: string;
-  repo?: string;
-  transcript: string; // JSONL content
+  transcript: {
+    id: string;
+    messages: any[];
+    messageCount: number;
+  };
+  title: string;
+  metadata: {
+    uploadedAt: string;
+    messageCount: number;
+    lastModified: string;
+    leafMessageId: string;
+  };
 }
 
 export default {
@@ -38,9 +47,16 @@ export default {
         }
 
         const objects = await env.TRANSCRIPTS_BUCKET.list();
-        const transcriptIds = objects.objects.map((obj) => obj.key);
+        const transcripts = objects.objects.map((obj) => ({
+          id: obj.key,
+          title: obj.customMetadata?.title || 'Unknown',
+          uploadedAt: obj.customMetadata?.['uploaded-at'] || obj.uploaded?.toISOString(),
+          messageCount: obj.customMetadata?.['message-count'] ? parseInt(obj.customMetadata['message-count']) : 0,
+          leafMessageId: obj.customMetadata?.['leaf-message-id'],
+          lastModified: obj.customMetadata?.['last-modified']
+        }));
 
-        return new Response(JSON.stringify({ transcripts: transcriptIds }), {
+        return new Response(JSON.stringify({ transcripts }), {
           headers: {
             "Content-Type": "application/json",
             ...corsHeaders,
@@ -70,7 +86,7 @@ export default {
           });
         }
 
-        const transcript = await object.text();
+        const content = await object.text();
 
         // Build metadata from custom metadata
         const meta: Record<string, any> = {};
@@ -87,13 +103,24 @@ export default {
           meta.createdAt = object.uploaded.toISOString();
         }
 
-        // Build response matching the original POST format
-        const response = {
-          transcript,
-          directory: meta.directory,
-          repo: meta.repo,
-          meta,
-        };
+        // Parse stored JSON format
+        let response;
+        try {
+          const parsedContent = JSON.parse(content);
+          response = {
+            transcript: parsedContent.transcript,
+            title: parsedContent.title,
+            metadata: {
+              ...parsedContent.metadata,
+              createdAt: meta.createdAt
+            }
+          };
+        } catch (error) {
+          return new Response("Stored data is not valid JSON", {
+            status: 500,
+            headers: corsHeaders,
+          });
+        }
 
         return new Response(JSON.stringify(response), {
           headers: {
@@ -124,63 +151,45 @@ export default {
         }
 
         // Validate required fields
-        if (!uploadData.transcript) {
-          return new Response("Missing required field: transcript", {
+        if (!uploadData.transcript || !uploadData.title || !uploadData.metadata) {
+          return new Response("Missing required fields: transcript, title, metadata", {
             status: 400,
             headers: corsHeaders,
           });
         }
 
-        // Validate that transcript is valid JSONL (each line should be valid JSON)
-        const lines = uploadData.transcript.trim().split("\n");
-        for (const line of lines) {
-          if (line.trim()) {
-            try {
-              JSON.parse(line);
-            } catch {
-              return new Response("Invalid JSONL format in transcript field", {
-                status: 400,
-                headers: corsHeaders,
-              });
-            }
-          }
-        }
-
-        // Prepare metadata
+        // Store the entire structured data as JSON
+        const content = JSON.stringify(uploadData);
+        
         const metadata: Record<string, string> = {
           "uploaded-at": new Date().toISOString(),
-          "content-type": "application/jsonl",
-          "v": "1",
+          "content-type": "application/json",
+          "v": "2",
+          "title": uploadData.title,
+          "message-count": uploadData.transcript.messageCount.toString(),
+          "leaf-message-id": uploadData.metadata.leafMessageId,
+          "last-modified": uploadData.metadata.lastModified,
         };
 
-        if (uploadData.directory) {
-          metadata.directory = uploadData.directory;
-        }
-
-        if (uploadData.repo) {
-          metadata.repo = uploadData.repo;
-        }
-
-        await env.TRANSCRIPTS_BUCKET.put(transcriptId, uploadData.transcript, {
+        await env.TRANSCRIPTS_BUCKET.put(transcriptId, content, {
           customMetadata: metadata,
         });
 
-        return new Response(
-          JSON.stringify({
-            success: true,
-            transcriptId,
-            directory: uploadData.directory,
-            repo: uploadData.repo,
-            message: "Transcript saved successfully",
-          }),
-          {
-            status: 201,
-            headers: {
-              "Content-Type": "application/json",
-              ...corsHeaders,
-            },
+        const responseData = {
+          success: true,
+          transcriptId,
+          title: uploadData.title,
+          messageCount: uploadData.transcript.messageCount,
+          message: "Conversation saved successfully",
+        };
+
+        return new Response(JSON.stringify(responseData), {
+          status: 201,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
           },
-        );
+        });
       }
 
       return new Response("Method not allowed", {

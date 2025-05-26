@@ -1,16 +1,33 @@
 import type { TranscriptMessage } from "@claude-viewer/shared";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import ClaudeTranscript from "../../components/ClaudeTranscript";
 
 export const runtime = "edge";
 
+interface BackendResponse {
+  transcript: {
+    id: string;
+    messages: TranscriptMessage[];
+    messageCount: number;
+  };
+  title: string;
+  metadata: {
+    uploadedAt: string;
+    messageCount: number;
+    lastModified: string;
+    leafMessageId: string;
+    createdAt?: string;
+  };
+}
+
 interface Transcript {
   id: string;
   messages: TranscriptMessage[];
-  projectPath?: string;
-  summary?: string;
+  title: string;
   uploadedAt: string;
-  messageCount?: number;
+  messageCount: number;
+  lastModified: string;
 }
 
 async function getTranscript(id: string): Promise<Transcript> {
@@ -22,29 +39,37 @@ async function getTranscript(id: string): Promise<Transcript> {
     notFound();
   }
 
-  const data = await response.json();
-
-  // Parse JSONL content into structured messages
-  const lines = data.transcript.trim().split("\n");
-  const messages: TranscriptMessage[] = [];
-
-  for (const line of lines) {
-    try {
-      const parsed = JSON.parse(line);
-      messages.push(parsed);
-    } catch (_e) {
-      console.error("Failed to parse line:", line);
-    }
-  }
+  const data: BackendResponse = await response.json();
 
   return {
-    id,
-    messages,
-    projectPath: data.directory,
-    summary: data.repo,
-    uploadedAt: data.uploaded_at,
-    messageCount: messages.length,
+    id: data.transcript.id,
+    messages: data.transcript.messages,
+    title: data.title,
+    uploadedAt: data.metadata.createdAt || data.metadata.uploadedAt,
+    messageCount: data.transcript.messageCount,
+    lastModified: data.metadata.lastModified,
   };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  
+  try {
+    const transcript = await getTranscript(id);
+    return {
+      title: `${transcript.title} - Claude Code Viewer`,
+      description: `View Claude Code conversation: ${transcript.title}`,
+    };
+  } catch {
+    return {
+      title: "Conversation - Claude Code Viewer",
+      description: "View Claude Code conversation",
+    };
+  }
 }
 
 export default async function TranscriptViewer({
@@ -57,10 +82,6 @@ export default async function TranscriptViewer({
   const { id } = await params;
   const { debug } = await searchParams;
   const transcript = await getTranscript(id);
-
-  // Extract summary from the last summary message
-  const lastSummaryMessage = transcript.messages.filter((msg) => msg.type === "summary").pop();
-  const summary = lastSummaryMessage?.summary;
 
   // Filter out summary messages from display
   const filteredMessages = transcript.messages.filter((msg) => msg.type !== "summary");
@@ -86,7 +107,7 @@ export default async function TranscriptViewer({
           <div className="font-bold">
             <span className="text-peach">✻⇡</span> Claude Code Viewer
           </div>
-          {summary && <div className="text-subtext-0 ml-[3ch] mt-[1lh]">{summary}</div>}
+          <div className="text-subtext-0 ml-[3ch] mt-[1lh]">{transcript.title}</div>
         </div>
 
         <div className="mt-[1.5lh] pb-[2lh] border-b border-surface-1">
