@@ -58,44 +58,6 @@ export function createUploadCommand(): Command {
           },
         ]);
 
-        // Show reconstructed conversation data structure that will be uploaded
-        console.log(chalk.cyan("\n📋 Complete conversation data structure to upload:"));
-        console.log(chalk.gray("─".repeat(80)));
-        
-        const uploadData = {
-          transcript: {
-            id: selected.id, // This is the leaf message UUID (final message in conversation)
-            messages: selected.transcript.messages,
-            messageCount: selected.transcript.messages.length
-          },
-          title: selected.summary,
-          metadata: {
-            uploadedAt: new Date().toISOString(),
-            messageCount: selected.transcript.messages.length,
-            lastModified: selected.lastModified.toISOString(),
-            leafMessageId: selected.id // Clarifying this is the leaf message ID
-          }
-        };
-        
-        console.log(JSON.stringify(uploadData, null, 2));
-        console.log(chalk.gray("─".repeat(80)));
-        console.log(chalk.yellow(`📝 Note: ID shown (${selected.id.slice(0, 8)}...) is the leaf message UUID`));
-        console.log(chalk.yellow(`💬 This conversation contains ${selected.transcript.messages.length} messages total`));
-
-        // Ask for confirmation
-        const { confirm } = await inquirer.prompt([
-          {
-            type: "confirm",
-            name: "confirm",
-            message: "Upload this conversation?",
-            default: true,
-          },
-        ]);
-
-        if (!confirm) {
-          console.log(chalk.yellow("Upload cancelled."));
-          return;
-        }
 
         // Upload selected conversation
         const uploadSpinner = ora("Uploading conversation...").start();

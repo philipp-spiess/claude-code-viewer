@@ -28,7 +28,9 @@
       "Bash(pnpm lint:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(pnpm test:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

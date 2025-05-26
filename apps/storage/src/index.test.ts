@@ -259,17 +259,13 @@ describe("Storage Worker", () => {
       const response = await worker.fetch(request, mockEnv);
 
       expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toBe("text/html");
 
-      const responseData = await response.json();
-      expect(responseData.transcripts).toHaveLength(2);
-      expect(responseData.transcripts[0]).toEqual({
-        id: "123e4567-e89b-12d3-a456-426614174000",
-        title: "Test Conversation 1",
-        uploadedAt: "2023-01-01T00:00:00.000Z",
-        messageCount: 5,
-        leafMessageId: "123e4567-e89b-12d3-a456-426614174000",
-        lastModified: "2023-01-01T00:00:00.000Z"
-      });
+      const responseText = await response.text();
+      expect(responseText).toContain("<!DOCTYPE html");
+      expect(responseText).toContain("Claude Code Transcripts");
+      expect(responseText).toContain("Test Conversation 1");
+      expect(responseText).toContain("Test Conversation 2");
 
       expect(mockR2Bucket.list).toHaveBeenCalled();
     });

@@ -1,16 +1,12 @@
-import type { MessageNode, TranscriptMessage } from "@claude-viewer/shared";
+import type { LinearMessageNode } from "@claude-viewer/shared";
 import { ToolUseDisplay } from "./ToolUse";
 
 interface MessageProps {
-  message: MessageNode;
-  nextMessage?: TranscriptMessage;
-  depth: number;
+  message: LinearMessageNode;
 }
 
 export default function ClaudeMessage({
   message: { message, toolResult },
-  nextMessage,
-  depth,
 }: MessageProps) {
 
   const getRoleDisplay = () => {

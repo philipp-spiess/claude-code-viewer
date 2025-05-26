@@ -89,17 +89,10 @@ export interface AssistantMessage extends BaseMessage {
 // Union of all message types
 export type TranscriptMessage = SummaryMessage | UserMessage | AssistantMessage;
 
-// Tree node structure for messages with parent-child relationships
-export interface MessageNode {
-  message: TranscriptMessage;
-  children: MessageNode[];
-  toolResult?: any; // Tool result from child messages that match tool_use_id
-}
 
 // Main transcript structure
 export interface Transcript {
   id: string;
   messages: TranscriptMessage[];
   messageCount?: number;
-  messageTree?: MessageNode[]; // Optional tree structure
 }

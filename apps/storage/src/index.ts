@@ -53,12 +53,98 @@ export default {
           uploadedAt: obj.customMetadata?.['uploaded-at'] || obj.uploaded?.toISOString(),
           messageCount: obj.customMetadata?.['message-count'] ? parseInt(obj.customMetadata['message-count']) : 0,
           leafMessageId: obj.customMetadata?.['leaf-message-id'],
-          lastModified: obj.customMetadata?.['last-modified']
+          lastModified: obj.customMetadata?.['last-modified'],
+          size: obj.size,
+          uploaded: obj.uploaded?.toISOString()
         }));
 
-        return new Response(JSON.stringify({ transcripts }), {
+        // Sort by uploaded date (newest first)
+        transcripts.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+
+        const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Transcripts</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Claude Code Transcripts</h1>
+            <p class="text-gray-600">Found ${transcripts.length} conversation${transcripts.length !== 1 ? 's' : ''}</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Title
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Messages
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Uploaded
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Size
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ID
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${transcripts.map(transcript => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <a href="https://claude-code-viewer.pages.dev/${transcript.id}" 
+                                   class="text-blue-600 hover:text-blue-800 font-medium" 
+                                   target="_blank">
+                                    ${transcript.title}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900">
+                                ${transcript.messageCount}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                ${new Date(transcript.uploadedAt).toLocaleDateString()} 
+                                ${new Date(transcript.uploadedAt).toLocaleTimeString()}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                ${transcript.size ? formatFileSize(transcript.size) : 'Unknown'}
+                            </td>
+                            <td class="px-6 py-4 text-sm font-mono text-gray-400">
+                                ${transcript.id.substring(0, 8)}...
+                            </td>
+                        </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>`;
+
+        return new Response(html, {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "text/html",
             ...corsHeaders,
           },
         });
