@@ -1,14 +1,17 @@
-import type { MessageNode } from "@claude-viewer/shared";
+import type { MessageNode, TranscriptMessage } from "@claude-viewer/shared";
 import { ToolUseDisplay } from "./ToolUse";
 
 interface MessageProps {
   message: MessageNode;
+  nextMessage?: TranscriptMessage;
+  depth: number;
 }
 
 export default function ClaudeMessage({
-  message: { message, toolResult, children },
+  message: { message, toolResult },
+  nextMessage,
+  depth,
 }: MessageProps) {
-  const resume = children.map((message, idx) => <ClaudeMessage key={idx} message={message} />);
 
   const getRoleDisplay = () => {
     if (message.type === "user") {
@@ -82,40 +85,37 @@ export default function ClaudeMessage({
   const roleDisplay = getRoleDisplay();
   const isUser = message.type === "user";
 
-  if (!hasContent && message.type !== "summary") return resume;
+  // Don't render if no content and not a summary
+  if (!hasContent && message.type !== "summary") return null;
 
   return (
-    <>
-      <div className="mb-[1lh]">
-        {content && (
-          <div className={`flex items-start gap-[1ch] ${isUser ? "text-subtext-0" : ""}`}>
-            <span className={`${roleDisplay.color} select-none shrink-0`}>
-              {roleDisplay.symbol}
-            </span>
+    <div className="mb-[1lh]">
+      {content && (
+        <div className={`flex items-start gap-[1ch] ${isUser ? "text-subtext-0" : ""}`}>
+          <span className={`${roleDisplay.color} select-none shrink-0`}>
+            {roleDisplay.symbol}
+          </span>
 
-            <div className="flex-1 min-w-0">
-              <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
-                {content}
-              </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+              {content}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {toolUses.length > 0 &&
-          toolUses.map((toolUse: any, idx: number) => (
-            <div className="flex items-start gap-[1ch] mt-[1lh]" key={idx}>
-              <span className={"text-green select-none shrink-0"}>⏺</span>
-              <ToolUseDisplay
-                key={idx}
-                toolUse={toolUse}
-                toolResult={toolResult?.[toolUse.id]}
-                cwd={"cwd" in message ? message.cwd : undefined}
-              />
-            </div>
-          ))}
-      </div>
-
-      {resume}
-    </>
+      {toolUses.length > 0 &&
+        toolUses.map((toolUse: any, idx: number) => (
+          <div className="flex items-start gap-[1ch] mt-[1lh]" key={idx}>
+            <span className={"text-green select-none shrink-0"}>⏺</span>
+            <ToolUseDisplay
+              key={idx}
+              toolUse={toolUse}
+              toolResult={toolResult?.[toolUse.id]}
+              cwd={"cwd" in message ? message.cwd : undefined}
+            />
+          </div>
+        ))}
+    </div>
   );
 }
