@@ -26,7 +26,9 @@
       "Bash(pnpm lint:*)",
       "Bash(pnpm biome format:*)",
       "Bash(pnpm lint:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }
