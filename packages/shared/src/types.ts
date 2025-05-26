@@ -32,6 +32,7 @@ export interface UserMessage extends BaseMessage {
     role: "user";
     content: string | ToolResult[];
   };
+  toolUseResult?: any;
 }
 
 // Tool use content
