@@ -46,17 +46,23 @@ export default {
           });
         }
 
-        const objects = await env.TRANSCRIPTS_BUCKET.list();
-        const transcripts = objects.objects.map((obj) => ({
-          id: obj.key,
-          title: obj.customMetadata?.title || 'Unknown',
-          uploadedAt: obj.customMetadata?.['uploaded-at'] || obj.uploaded?.toISOString(),
-          messageCount: obj.customMetadata?.['message-count'] ? parseInt(obj.customMetadata['message-count']) : 0,
-          leafMessageId: obj.customMetadata?.['leaf-message-id'],
-          lastModified: obj.customMetadata?.['last-modified'],
-          size: obj.size,
-          uploaded: obj.uploaded?.toISOString()
-        }));
+        const objects = await env.TRANSCRIPTS_BUCKET.list({
+          include: ["customMetadata"],
+          limit: 1000
+        });
+        const transcripts = objects.objects.map((obj) => {
+          const metadata = obj.customMetadata || {};
+          return {
+            id: obj.key,
+            title: metadata.title || 'Unknown',
+            uploadedAt: metadata['uploaded-at'] || obj.uploaded?.toISOString() || '',
+            messageCount: metadata['message-count'] ? parseInt(metadata['message-count']) : 0,
+            leafMessageId: metadata['leaf-message-id'],
+            lastModified: metadata['last-modified'],
+            size: obj.size,
+            uploaded: obj.uploaded?.toISOString(),
+          };
+        });
 
         // Sort by uploaded date (newest first)
         transcripts.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
@@ -72,7 +78,7 @@ export default {
 
         const html = `
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,71 +88,45 @@ export default {
         @tailwind base;
         @tailwind components;
         @tailwind utilities;
-        
-        :root {
-            --background: 0 0% 100%;
-            --foreground: 222.2 84% 4.9%;
-            --muted: 210 40% 98%;
-            --muted-foreground: 215.4 16.3% 46.9%;
-            --border: 214.3 31.8% 91.4%;
-            --primary: 222.2 47.4% 11.2%;
-        }
-        
-        .dark {
-            --background: 222.2 84% 4.9%;
-            --foreground: 210 40% 98%;
-            --muted: 217.2 32.6% 17.5%;
-            --muted-foreground: 215 20.2% 65.1%;
-            --border: 217.2 32.6% 17.5%;
-            --primary: 210 40% 98%;
-        }
-        
-        .bg-background { background-color: hsl(var(--background)); }
-        .text-foreground { color: hsl(var(--foreground)); }
-        .bg-muted { background-color: hsl(var(--muted)); }
-        .text-muted-foreground { color: hsl(var(--muted-foreground)); }
-        .border { border-color: hsl(var(--border)); }
-        .text-primary { color: hsl(var(--primary)); }
-        .hover\\:bg-muted\\/50:hover { background-color: hsl(var(--muted) / 0.5); }
     </style>
 </head>
-<body class="bg-background text-foreground min-h-screen">
-    <div class="container mx-auto py-6 max-w-5xl px-4">
-        <div class="mb-6">
-            <h1 class="text-2xl font-semibold">Claude Code Transcripts</h1>
-            <p class="text-sm text-muted-foreground">${transcripts.length} conversation${transcripts.length !== 1 ? 's' : ''} found</p>
+<body class="bg-white text-slate-900 min-h-screen">
+    <div class="container mx-auto py-4 max-w-6xl px-4">
+        <div class="mb-4">
+            <h1 class="text-xl font-semibold">Claude Code Transcripts</h1>
+            <p class="text-sm text-slate-600">${transcripts.length} conversation${transcripts.length !== 1 ? 's' : ''} found</p>
         </div>
         
-        <div class="rounded-md border">
+        <div class="rounded-md border border-slate-200">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b">
-                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Title</th>
-                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Messages</th>
-                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Uploaded</th>
-                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Size</th>
-                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">ID</th>
+                    <tr class="border-b border-slate-200 bg-slate-50/50">
+                        <th class="h-10 px-3 text-left align-middle font-medium text-slate-600 text-sm">Title</th>
+                        <th class="h-10 px-3 text-left align-middle font-medium text-slate-600 text-sm">Msgs</th>
+                        <th class="h-10 px-3 text-left align-middle font-medium text-slate-600 text-sm">Uploaded</th>
+                        <th class="h-10 px-3 text-left align-middle font-medium text-slate-600 text-sm">Size</th>
+                        <th class="h-10 px-3 text-left align-middle font-medium text-slate-600 text-sm">ID</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${transcripts.map(transcript => `
-                    <tr class="border-b hover:bg-muted/50">
-                        <td class="p-4 align-middle">
+                    <tr class="border-b border-slate-200 hover:bg-slate-50/50">
+                        <td class="px-3 py-2 align-middle">
                             <a href="https://claude-code-viewer.pages.dev/${transcript.id}" 
-                               class="font-medium text-primary hover:underline" 
+                               class="font-medium text-blue-600 hover:underline text-sm" 
                                target="_blank">
                                 ${transcript.title}
                             </a>
                         </td>
-                        <td class="p-4 align-middle text-sm">${transcript.messageCount}</td>
-                        <td class="p-4 align-middle text-sm text-muted-foreground">
+                        <td class="px-3 py-2 align-middle text-sm">${transcript.messageCount}</td>
+                        <td class="px-3 py-2 align-middle text-sm text-slate-600">
                             ${new Date(transcript.uploadedAt).toLocaleDateString()}
                         </td>
-                        <td class="p-4 align-middle text-sm text-muted-foreground">
+                        <td class="px-3 py-2 align-middle text-sm text-slate-600">
                             ${transcript.size ? formatFileSize(transcript.size) : 'Unknown'}
                         </td>
-                        <td class="p-4 align-middle text-sm font-mono text-muted-foreground">
-                            ${transcript.id.substring(0, 8)}...
+                        <td class="px-3 py-2 align-middle text-xs font-mono text-slate-500 break-all">
+                            ${transcript.id}
                         </td>
                     </tr>
                     `).join('')}

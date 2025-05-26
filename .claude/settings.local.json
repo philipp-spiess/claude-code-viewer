@@ -30,7 +30,8 @@
       "Bash(grep:*)",
       "Bash(sed:*)",
       "Bash(pnpm test:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "WebFetch(domain:developers.cloudflare.com)"
     ],
     "deny": []
   }
