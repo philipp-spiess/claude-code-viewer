@@ -61,84 +61,99 @@ export default {
         // Sort by uploaded date (newest first)
         transcripts.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
 
+        // Helper function to format file sizes
+        const formatFileSize = (bytes: number): string => {
+          if (bytes === 0) return '0 B';
+          const k = 1024;
+          const sizes = ['B', 'KB', 'MB', 'GB'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        };
+
         const html = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claude Code Transcripts</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 98%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --border: 214.3 31.8% 91.4%;
+            --primary: 222.2 47.4% 11.2%;
+        }
+        
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --border: 217.2 32.6% 17.5%;
+            --primary: 210 40% 98%;
+        }
+        
+        .bg-background { background-color: hsl(var(--background)); }
+        .text-foreground { color: hsl(var(--foreground)); }
+        .bg-muted { background-color: hsl(var(--muted)); }
+        .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+        .border { border-color: hsl(var(--border)); }
+        .text-primary { color: hsl(var(--primary)); }
+        .hover\\:bg-muted\\/50:hover { background-color: hsl(var(--muted) / 0.5); }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen py-8">
-    <div class="max-w-6xl mx-auto px-4">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Claude Code Transcripts</h1>
-            <p class="text-gray-600">Found ${transcripts.length} conversation${transcripts.length !== 1 ? 's' : ''}</p>
+<body class="bg-background text-foreground min-h-screen">
+    <div class="container mx-auto py-6 max-w-5xl px-4">
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold">Claude Code Transcripts</h1>
+            <p class="text-sm text-muted-foreground">${transcripts.length} conversation${transcripts.length !== 1 ? 's' : ''} found</p>
         </div>
         
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Title
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Messages
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Uploaded
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Size
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                ID
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        ${transcripts.map(transcript => `
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4">
-                                <a href="https://claude-code-viewer.pages.dev/${transcript.id}" 
-                                   class="text-blue-600 hover:text-blue-800 font-medium" 
-                                   target="_blank">
-                                    ${transcript.title}
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">
-                                ${transcript.messageCount}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500">
-                                ${new Date(transcript.uploadedAt).toLocaleDateString()} 
-                                ${new Date(transcript.uploadedAt).toLocaleTimeString()}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500">
-                                ${transcript.size ? formatFileSize(transcript.size) : 'Unknown'}
-                            </td>
-                            <td class="px-6 py-4 text-sm font-mono text-gray-400">
-                                ${transcript.id.substring(0, 8)}...
-                            </td>
-                        </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
+        <div class="rounded-md border">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Title</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Messages</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Uploaded</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Size</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${transcripts.map(transcript => `
+                    <tr class="border-b hover:bg-muted/50">
+                        <td class="p-4 align-middle">
+                            <a href="https://claude-code-viewer.pages.dev/${transcript.id}" 
+                               class="font-medium text-primary hover:underline" 
+                               target="_blank">
+                                ${transcript.title}
+                            </a>
+                        </td>
+                        <td class="p-4 align-middle text-sm">${transcript.messageCount}</td>
+                        <td class="p-4 align-middle text-sm text-muted-foreground">
+                            ${new Date(transcript.uploadedAt).toLocaleDateString()}
+                        </td>
+                        <td class="p-4 align-middle text-sm text-muted-foreground">
+                            ${transcript.size ? formatFileSize(transcript.size) : 'Unknown'}
+                        </td>
+                        <td class="p-4 align-middle text-sm font-mono text-muted-foreground">
+                            ${transcript.id.substring(0, 8)}...
+                        </td>
+                    </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     </div>
-    
-    <script>
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-    </script>
 </body>
 </html>`;
 
