@@ -2,6 +2,20 @@
 
 import { useState } from "react";
 
+// Format MCP tool names: mcp__playwright__function_name -> playwright:function_name
+const formatToolName = (name: string) => {
+  const mcpMatch = name.match(/^mcp__([^_]+)__(.+)$/);
+  if (mcpMatch) {
+    const [, serverName, functionName] = mcpMatch;
+    return (
+      <>
+        <span className="text-subtext-0">{serverName}:</span>{functionName}
+      </>
+    );
+  }
+  return name;
+};
+
 export function ToolUseDisplay({
   toolUse,
   toolResult,
@@ -30,7 +44,12 @@ export function ToolUseDisplay({
       }
     }
 
-    return `${toolName}(${params.join(", ")})${expanded ? "" : "…"}`;
+
+    return (
+      <>
+        {formatToolName(toolName)}({params.join(", ")}){expanded ? "" : "…"}
+      </>
+    );
   };
 
   // Count lines in input
@@ -49,6 +68,11 @@ export function ToolUseDisplay({
       output: toolResult,
     };
     return <ReadTool toolUse={toolUseWithResult} cwd={cwd} />;
+  }
+
+  // Use ScreenshotTool for Playwright screenshot tool
+  if (toolName === "mcp__playwright__browser_take_screenshot") {
+    return <ScreenshotTool toolUse={toolUse} toolResult={toolResult} />;
   }
 
   return (
@@ -136,6 +160,79 @@ function ReadTool({ toolUse, cwd }: ReadToolProps) {
           <pre className=" text-subtext-0 max-w-full whitespace-pre-wrap">{toolResult}</pre>
         </div>
       )}
+    </div>
+  );
+}
+
+interface ScreenshotToolProps {
+  toolUse: {
+    tool_name?: string;
+    name?: string;
+    parameters?: any;
+    input?: any;
+  };
+  toolResult: any;
+}
+
+function ScreenshotTool({ toolUse, toolResult }: ScreenshotToolProps) {
+  const [isLarge, setIsLarge] = useState(false);
+  const input = toolUse.input || toolUse.parameters || {};
+  const toolName = toolUse.name || toolUse.tool_name || "Unknown Tool";
+
+  // Format tool name with parameters
+  const getToolDisplay = () => {
+    const params: string[] = [];
+    if (input) {
+      for (const [key, value] of Object.entries(input)) {
+        if (typeof value === "string" && value.length < 50) {
+          params.push(`${key}: "${value}"`);
+        } else if (typeof value === "number" || typeof value === "boolean") {
+          params.push(`${key}: ${value}`);
+        }
+      }
+    }
+
+    return (
+      <>
+        {formatToolName(toolName)}({params.join(", ")})
+      </>
+    );
+  };
+
+  // Check if the result contains image data
+  const hasImageData = toolResult && Array.isArray(toolResult) && 
+    toolResult.some((item: any) => item.type === "image" && item.source?.data);
+
+  const getImageData = () => {
+    if (!hasImageData) return null;
+    const imageItem = toolResult.find((item: any) => item.type === "image");
+    return imageItem?.source?.data;
+  };
+
+  const imageData = getImageData();
+
+  return (
+    <div>
+      <span>{getToolDisplay()}</span>
+      <div className="flex gap-[1ch]">
+        <div className="text-purple-600 dark:text-purple-400">⎿</div>
+        <div className="flex flex-col gap-4">
+          {imageData && (
+            <div className="max-w-full">
+              <img 
+                src={`data:image/jpeg;base64,${imageData}`}
+                alt="Screenshot"
+                className={`h-auto object-contain cursor-pointer transition-all duration-200 ${
+                  isLarge 
+                    ? "w-full" 
+                    : "max-w-full max-h-[20lh]"
+                }`}
+                onClick={() => setIsLarge(!isLarge)}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

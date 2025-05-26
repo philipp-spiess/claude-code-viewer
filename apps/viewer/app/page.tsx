@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="py-[1lh]">
-      <div className="max-w-[120ch] mx-auto">
+      <div className="max-w-[100ch] mx-auto">
         <div className="mb-[1lh]">
           <h1 className="font-bold mb-[0.5lh]">
             <span className="text-peach">✻⇡</span> CLAUDE-CODE-UPLOADER(1)
@@ -103,6 +103,15 @@ export default function Home() {
                   href="https://docs.anthropic.com/en/docs/claude-code/overview"
                 >
                   claude
+                </Link>
+                (1),{" "}
+                <Link
+                  className="hover:underline"
+                  href="https://github.com/philipp-spiess/claude-code-viewer"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  claude-code-viewer
                 </Link>
                 (1)
               </p>

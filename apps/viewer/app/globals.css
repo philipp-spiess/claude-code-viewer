@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-mono: var(--font-ibm-plex-mono), monospace;
+  --font-mono: var(--font-jetbrains-mono), monospace;
 }
 
 @theme static {
@@ -40,6 +40,10 @@
 
 /* Custom scrollbar styles for Windows */
 @layer base {
+  /* Font ligatures for JetBrains Mono */
+  .font-mono {
+    font-feature-settings: "ss19", "cv02", "cv04", "cv07", "cv11", "cv16", "cv17", "zero";
+  }
   /* Hide default scrollbar for Chrome, Safari and Opera */
   *::-webkit-scrollbar {
     width: 1ch;

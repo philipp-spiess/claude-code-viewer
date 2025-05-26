@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="[scrollbar-gutter:stable]">
-      <body className={`${ibmPlexMono.variable} antialiased text-text bg-base font-mono`}>
+      <body className={`${jetbrainsMono.variable} antialiased text-text bg-base font-mono`}>
         {children}
       </body>
     </html>

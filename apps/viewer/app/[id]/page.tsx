@@ -1,6 +1,7 @@
 import type { TranscriptMessage } from "@claude-viewer/shared";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import ClaudeTranscript from "../../components/ClaudeTranscript";
 
 export const runtime = "edge";
@@ -88,7 +89,7 @@ export default async function TranscriptViewer({
 
   return (
     <div className="min-h-screen bg-base font-mono">
-      <div className="w-full max-w-[120ch] mx-auto relative pt-[0.5lh]">
+      <div className="w-full max-w-[100ch] mx-auto relative pt-[0.5lh]">
         {debug && (
           <div
             className="absolute inset-0 min-h-screen pointer-events-none z-0"
@@ -104,10 +105,10 @@ export default async function TranscriptViewer({
           />
         )}
         <div className="py-[0.5lh] px-[1.5ch] mb-[0.5lh] mx-[0.5ch] outline-peach outline rounded relative z-10">
-          <div className="font-bold">
-            <span className="text-peach">✻⇡</span> Claude Code Viewer
+          <div className="font-bold flex justify-between items-center min-w-0">
+            <Link href="https://github.com/philipp-spiess/claude-code-viewer" target="_blank" rel="noopener" className="flex-shrink-0 hover:underline"><span className="text-peach">✻⇡</span> Claude Code Viewer</Link>
+            <span className="text-subtext-0 truncate ml-[3ch] font-normal min-w-0 flex-1">{transcript.title}</span>
           </div>
-          <div className="text-subtext-0 ml-[3ch] mt-[1lh]">{transcript.title}</div>
         </div>
 
         <div className="mt-[1.5lh] pb-[2lh] border-b border-surface-1">
