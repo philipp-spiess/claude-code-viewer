@@ -38,26 +38,10 @@ importers:
         version: 3.1.4(@types/node@22.15.21)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.19.4)(yaml@2.8.0)
 
   apps/uploader:
-    dependencies:
+    devDependencies:
       '@claude-viewer/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      chalk:
-        specifier: ^5.3.0
-        version: 5.4.1
-      commander:
-        specifier: ^11.1.0
-        version: 11.1.0
-      inquirer:
-        specifier: ^9.2.12
-        version: 9.3.7
-      ora:
-        specifier: ^8.0.1
-        version: 8.2.0
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-    devDependencies:
       '@types/inquirer':
         specifier: ^9.0.7
         version: 9.0.8
@@ -67,15 +51,30 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
+      chalk:
+        specifier: ^5.3.0
+        version: 5.4.1
+      commander:
+        specifier: ^11.1.0
+        version: 11.1.0
       esbuild:
         specifier: ^0.21.5
         version: 0.21.5
+      inquirer:
+        specifier: ^9.2.12
+        version: 9.3.7
+      ora:
+        specifier: ^8.0.1
+        version: 8.2.0
       tsx:
         specifier: ^4.6.2
         version: 4.19.4
       typescript:
         specifier: ^5.3.2
         version: 5.8.3
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
 
   apps/viewer:
     dependencies:
